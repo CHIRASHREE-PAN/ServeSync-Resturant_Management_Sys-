@@ -12,6 +12,14 @@ class Settings(BaseSettings):
     db_host: str = "localhost"
     db_port: int = 3306
     db_name: str = "restaurant_db"
+    jwt_secret: str = "change-this-secret"
+    jwt_algorithm: str = "HS256"
+    jwt_expiry_minutes: int = 60
+    smtp_host: str = "smtp.ethereal.email"
+    smtp_port: int = 587
+    smtp_username: str = "catharine.kuphal88@ethereal.email"
+    smtp_password: str = "F57FMp3aRDG1BDS5SK"
+    smtp_use_tls: bool = True
 
     model_config = SettingsConfigDict(
         env_file=".env",

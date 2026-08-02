@@ -1,8 +1,7 @@
-from contextlib import contextmanager
-from typing import Iterator
+from typing import Generator, Iterator
 
 from sqlalchemy import create_engine, text
-from sqlalchemy.orm import DeclarativeBase, sessionmaker
+from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from app.config import get_settings
 
@@ -19,8 +18,7 @@ engine = create_engine(settings.database_url, pool_pre_ping=True, future=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, future=True)
 
 
-@contextmanager
-def get_db() -> Iterator:
+def get_db() -> Generator[Session, None, None]:
     db = SessionLocal()
     try:
         yield db

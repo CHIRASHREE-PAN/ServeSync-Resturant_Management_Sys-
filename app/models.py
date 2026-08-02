@@ -12,9 +12,24 @@ class User(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True, nullable=False)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
-    password: Mapped[str] = mapped_column(String(255), nullable=False)
     role: Mapped[str] = mapped_column(String(50), nullable=False, default="staff")
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
+
+    otps: Mapped[list["OTP"]] = relationship(back_populates="user")
+
+
+class OTP(Base):
+    __tablename__ = "otp"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    otp: Mapped[str] = mapped_column(String(6), nullable=False)
+    expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    is_used: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
+
+    user: Mapped[User] = relationship(back_populates="otps")
 
 
 class Table(Base):

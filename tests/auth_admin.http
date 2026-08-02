@@ -1,0 +1,41 @@
+### Request OTP
+POST http://127.0.0.1:8005/auth/request-otp
+Content-Type: application/json
+
+{"email": "adm.in@gmail.com"}
+
+### Verify OTP
+POST http://127.0.0.1:8005/auth/verify-otp
+Content-Type: application/json
+
+{"email": "adm.in@gmail.com", "otp": "123456"}
+
+### Get current user
+GET http://127.0.0.1:8005/auth/me
+Authorization: Bearer <token>
+
+### Create staff
+POST http://127.0.0.1:8005/admin/users
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{"name": "Kitchen Staff", "email": "kitchen.staff@example.com", "role": "kitchen"}
+
+### List staff
+GET http://127.0.0.1:8005/admin/users?page=1&page_size=20&role=admin
+Authorization: Bearer <token>
+
+### Get staff by id
+GET http://127.0.0.1:8005/admin/users/2
+Authorization: Bearer <token>
+
+### Update staff
+PUT http://127.0.0.1:8005/admin/users/2
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{"name": "Updated Kitchen", "role": "kitchen"}
+
+### Delete staff
+DELETE http://127.0.0.1:8005/admin/users/2
+Authorization: Bearer <token>
