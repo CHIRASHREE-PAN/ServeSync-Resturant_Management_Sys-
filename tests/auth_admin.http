@@ -55,6 +55,110 @@ Content-Type: application/json
 
 {"name": "John Doe", "email": "john.doe@example.com", "number_of_people": 5, "table_number": 8}
 
+### Create category (admin only)
+POST http://127.0.0.1:8005/categories
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{"name": "Starters", "description": "Appetizers and small plates"}
+
+### List categories (public)
+GET http://127.0.0.1:8005/categories?page=1&page_size=20
+
+### Search categories (public)
+GET http://127.0.0.1:8005/categories?page=1&page_size=20&search=starter
+
+### Get category by id (public)
+GET http://127.0.0.1:8005/categories/1
+
+### Update category (admin only)
+PUT http://127.0.0.1:8005/categories/1
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{"name": "Updated Starters", "description": "Updated appetizer selection"}
+
+### Delete category (admin only)
+DELETE http://127.0.0.1:8005/categories/1
+Authorization: Bearer <token>
+
+### Create menu item (admin only; category_id must exist)
+POST http://127.0.0.1:8005/menu
+Authorization: Bearer <token>
+Content-Type: multipart/form-data; boundary=MenuBoundary
+
+--MenuBoundary
+Content-Disposition: form-data; name="category_id"
+
+1
+--MenuBoundary
+Content-Disposition: form-data; name="name"
+
+Paneer Tikka
+--MenuBoundary
+Content-Disposition: form-data; name="description"
+
+Grilled cottage cheese with spices
+--MenuBoundary
+Content-Disposition: form-data; name="price"
+
+249.00
+--MenuBoundary
+Content-Disposition: form-data; name="calories"
+
+320
+--MenuBoundary
+Content-Disposition: form-data; name="cook_time"
+
+20
+--MenuBoundary
+Content-Disposition: form-data; name="availability"
+
+true
+--MenuBoundary
+Content-Disposition: form-data; name="chef_special"
+
+true
+--MenuBoundary
+Content-Disposition: form-data; name="best_seller"
+
+false
+--MenuBoundary--
+
+### List available menu items (public)
+GET http://127.0.0.1:8005/menu?page=1&page_size=20&sort_by=name&sort_dir=asc
+
+### Filter menu items by category and chef special (public)
+GET http://127.0.0.1:8005/menu?page=1&page_size=20&category_id=1&chef_special=true
+
+### Search menu items by name (public)
+GET http://127.0.0.1:8005/menu/search?query=paneer
+
+### Get menu item by id (public)
+GET http://127.0.0.1:8005/menu/1
+
+### Get available menu items by category (public)
+GET http://127.0.0.1:8005/menu/category/1
+
+### Update menu item (admin only)
+PUT http://127.0.0.1:8005/menu/1
+Authorization: Bearer <token>
+Content-Type: multipart/form-data; boundary=MenuBoundary
+
+--MenuBoundary
+Content-Disposition: form-data; name="price"
+
+269.00
+--MenuBoundary
+Content-Disposition: form-data; name="best_seller"
+
+true
+--MenuBoundary--
+
+### Delete menu item (admin only)
+DELETE http://127.0.0.1:8005/menu/1
+Authorization: Bearer <token>
+
 ### cURL examples
 # curl -X POST http://127.0.0.1:8005/customer/session -H "Content-Type: application/json" -d '{"name":"John Doe","email":"john.doe@example.com","number_of_people":4,"table_number":8}'
 # curl -X GET http://127.0.0.1:8005/customer/session/1

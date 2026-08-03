@@ -1,4 +1,4 @@
-from datetime import datetime
+from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -7,8 +7,7 @@ class MenuItemCreateRequest(BaseModel):
     category_id: int = Field(..., gt=0)
     name: str = Field(..., min_length=1, max_length=150)
     description: str | None = None
-    price: float = Field(..., gt=0)
-    image: str | None = None
+    price: Decimal = Field(..., gt=0)
     calories: int | None = Field(default=None, ge=0)
     cook_time: int | None = Field(default=None, gt=0)
     availability: bool = True
@@ -20,8 +19,7 @@ class MenuItemUpdateRequest(BaseModel):
     category_id: int | None = Field(default=None, gt=0)
     name: str | None = Field(default=None, min_length=1, max_length=150)
     description: str | None = None
-    price: float | None = Field(default=None, gt=0)
-    image: str | None = None
+    price: Decimal | None = Field(default=None, gt=0)
     calories: int | None = Field(default=None, ge=0)
     cook_time: int | None = Field(default=None, gt=0)
     availability: bool | None = None
@@ -36,7 +34,7 @@ class MenuItemResponse(BaseModel):
     category_id: int
     name: str
     description: str | None = None
-    price: float
+    price: Decimal
     image: str | None = None
     calories: int | None = None
     cook_time: int | None = None

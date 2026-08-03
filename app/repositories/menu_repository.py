@@ -1,4 +1,5 @@
 from sqlalchemy import func, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.models import Category, MenuItem
@@ -45,8 +46,12 @@ class MenuRepository:
             best_seller=best_seller,
         )
         self.db.add(menu_item)
-        self.db.commit()
-        self.db.refresh(menu_item)
+        try:
+            self.db.commit()
+            self.db.refresh(menu_item)
+        except IntegrityError:
+            self.db.rollback()
+            raise
         return menu_item
 
     def list_menu_items(
@@ -112,10 +117,18 @@ class MenuRepository:
         for key, value in kwargs.items():
             if value is not None and hasattr(menu_item, key):
                 setattr(menu_item, key, value)
-        self.db.commit()
-        self.db.refresh(menu_item)
+        try:
+            self.db.commit()
+            self.db.refresh(menu_item)
+        except IntegrityError:
+            self.db.rollback()
+            raise
         return menu_item
 
     def delete_menu_item(self, menu_item: MenuItem) -> None:
         self.db.delete(menu_item)
-        self.db.commit()
+        try:
+            self.db.commit()
+        except IntegrityError:
+            self.db.rollback()
+            raise
