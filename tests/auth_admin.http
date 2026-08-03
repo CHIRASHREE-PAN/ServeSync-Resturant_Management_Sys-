@@ -39,3 +39,23 @@ Content-Type: application/json
 ### Delete staff
 DELETE http://127.0.0.1:8005/admin/users/2
 Authorization: Bearer <token>
+
+### Create customer session
+POST http://127.0.0.1:8005/customer/session
+Content-Type: application/json
+
+{"name": "John Doe", "email": "john.doe@example.com", "number_of_people": 4, "table_number": 8}
+
+### Get customer session by id
+GET http://127.0.0.1:8005/customer/session/1
+
+### Update customer session by id
+PUT http://127.0.0.1:8005/customer/session/1
+Content-Type: application/json
+
+{"name": "John Doe", "email": "john.doe@example.com", "number_of_people": 5, "table_number": 8}
+
+### cURL examples
+# curl -X POST http://127.0.0.1:8005/customer/session -H "Content-Type: application/json" -d '{"name":"John Doe","email":"john.doe@example.com","number_of_people":4,"table_number":8}'
+# curl -X GET http://127.0.0.1:8005/customer/session/1
+# curl -X PUT http://127.0.0.1:8005/customer/session/1 -H "Content-Type: application/json" -d '{"number_of_people":5}'

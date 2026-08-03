@@ -41,6 +41,42 @@ class DuplicateEmailError(AppError):
         super().__init__(message)
 
 
+class TableNotFoundError(AppError):
+    def __init__(self, message: str = "Table not found"):
+        self.message = message
+        super().__init__(message)
+
+
+class TableSessionConflictError(AppError):
+    def __init__(self, message: str = "Active customer session already exists for the selected table"):
+        self.message = message
+        super().__init__(message)
+
+
+class CustomerSessionNotFoundError(AppError):
+    def __init__(self, message: str = "Customer session not found"):
+        self.message = message
+        super().__init__(message)
+
+
+class InvalidCustomerSessionStateError(AppError):
+    def __init__(self, message: str = "Invalid customer session state"):
+        self.message = message
+        super().__init__(message)
+
+
+class MenuItemNotFoundError(AppError):
+    def __init__(self, message: str = "Menu item not found"):
+        self.message = message
+        super().__init__(message)
+
+
+class MenuItemConflictError(AppError):
+    def __init__(self, message: str = "Menu item conflict"):
+        self.message = message
+        super().__init__(message)
+
+
 class UnauthorizedError(AppError):
     def __init__(self, message: str = "Unauthorized"):
         self.message = message
@@ -78,6 +114,12 @@ HTTP_STATUS_MAP = {
     ExpiredOtpError: status.HTTP_400_BAD_REQUEST,
     OtpAlreadyUsedError: status.HTTP_400_BAD_REQUEST,
     DuplicateEmailError: status.HTTP_409_CONFLICT,
+    TableNotFoundError: status.HTTP_404_NOT_FOUND,
+    TableSessionConflictError: status.HTTP_409_CONFLICT,
+    CustomerSessionNotFoundError: status.HTTP_404_NOT_FOUND,
+    InvalidCustomerSessionStateError: status.HTTP_400_BAD_REQUEST,
+    MenuItemNotFoundError: status.HTTP_404_NOT_FOUND,
+    MenuItemConflictError: status.HTTP_409_CONFLICT,
     UnauthorizedError: status.HTTP_401_UNAUTHORIZED,
     ForbiddenError: status.HTTP_403_FORBIDDEN,
     DatabaseOperationError: status.HTTP_500_INTERNAL_SERVER_ERROR,

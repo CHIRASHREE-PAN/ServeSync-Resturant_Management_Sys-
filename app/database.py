@@ -1,4 +1,4 @@
-from typing import Generator, Iterator
+from typing import Generator
 
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
@@ -47,7 +47,41 @@ def create_database_if_not_exists() -> None:
     server_engine.dispose()
 
 
+def ensure_customer_session_schema() -> None:
+    with engine.begin() as connection:
+        columns = [row[0] for row in connection.execute(text("SHOW COLUMNS FROM customer_sessions"))]
+
+        if "session_id" not in columns:
+            connection.execute(text("ALTER TABLE customer_sessions ADD COLUMN session_id VARCHAR(64) NULL"))
+            connection.execute(text("UPDATE customer_sessions SET session_id = UUID() WHERE session_id IS NULL"))
+            connection.execute(text("ALTER TABLE customer_sessions MODIFY COLUMN session_id VARCHAR(64) NOT NULL"))
+            connection.execute(text("CREATE UNIQUE INDEX uq_customer_sessions_session_id ON customer_sessions (session_id)"))
+
+        if "started_at" not in columns:
+            connection.execute(text("ALTER TABLE customer_sessions ADD COLUMN started_at DATETIME NULL"))
+            connection.execute(text("UPDATE customer_sessions SET started_at = created_at WHERE started_at IS NULL"))
+            connection.execute(text("ALTER TABLE customer_sessions MODIFY COLUMN started_at DATETIME NOT NULL"))
+
+        if "ended_at" not in columns:
+            connection.execute(text("ALTER TABLE customer_sessions ADD COLUMN ended_at DATETIME NULL"))
+
+        if "number_of_people" not in columns:
+            if "people" in columns:
+                connection.execute(text("ALTER TABLE customer_sessions ADD COLUMN number_of_people INT NULL"))
+                connection.execute(text("UPDATE customer_sessions SET number_of_people = people WHERE number_of_people IS NULL"))
+                connection.execute(text("ALTER TABLE customer_sessions MODIFY COLUMN number_of_people INT NOT NULL"))
+                connection.execute(text("ALTER TABLE customer_sessions DROP COLUMN people"))
+            else:
+                connection.execute(text("ALTER TABLE customer_sessions ADD COLUMN number_of_people INT NOT NULL DEFAULT 1"))
+
+        connection.execute(text("ALTER TABLE customer_sessions MODIFY COLUMN created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP"))
+        connection.execute(text("UPDATE customer_sessions SET status = UPPER(status) WHERE status IS NOT NULL"))
+        connection.execute(text("ALTER TABLE customer_sessions MODIFY COLUMN status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE'"))
+        connection.execute(text("ALTER TABLE customer_sessions MODIFY COLUMN email VARCHAR(120) NOT NULL"))
+
+
 def initialize_database() -> None:
     create_database_if_not_exists()
     Base.metadata.create_all(bind=engine)
+    ensure_customer_session_schema()
     print("Database tables ensured successfully.")

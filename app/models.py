@@ -46,18 +46,25 @@ class CustomerSession(Base):
     __tablename__ = "customer_sessions"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    session_id: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
     table_id: Mapped[int] = mapped_column(ForeignKey("tables.id"), nullable=False)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
-    email: Mapped[str | None] = mapped_column(String(120), nullable=True)
-    people: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
-    status: Mapped[str] = mapped_column(String(50), nullable=False, default="active")
+    email: Mapped[str] = mapped_column(String(120), nullable=False)
+    number_of_people: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="ACTIVE")
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
+    started_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
+    ended_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True, default=None)
 
     table: Mapped[Table] = relationship(back_populates="customer_sessions")
     orders: Mapped[list["Order"]] = relationship(back_populates="session")
     waiter_calls: Mapped[list["WaiterCall"]] = relationship(back_populates="session")
     bills: Mapped[list["Bill"]] = relationship(back_populates="session")
     feedback: Mapped[list["Feedback"]] = relationship(back_populates="session")
+
+    @property
+    def table_number(self) -> int:
+        return self.table.table_number if self.table is not None else 0
 
 
 class Category(Base):

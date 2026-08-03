@@ -8,6 +8,8 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.api.routers.admin_router import router as admin_router
 from app.api.routers.auth_router import router as auth_router
+from app.api.routers.customer_session_router import router as customer_session_router
+from app.api.routers.menu_router import router as menu_router
 from app.core.exceptions import AppError, get_http_exception
 from app.database import initialize_database
 
@@ -54,6 +56,8 @@ async def validation_exception_handler(_: Request, exc: RequestValidationError) 
 
 app.include_router(auth_router)
 app.include_router(admin_router)
+app.include_router(customer_session_router)
+app.include_router(menu_router)
 
 
 @app.get("/")

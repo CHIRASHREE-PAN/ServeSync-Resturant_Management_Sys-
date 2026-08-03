@@ -9,6 +9,7 @@ from app.core.security import bearer_scheme, create_access_token, decode_access_
 from app.database import get_db
 from app.models import User
 from app.repositories.user_repository import UserRepository
+from app.services.customer_session_service import CustomerSessionService
 
 
 def get_current_user(
@@ -39,3 +40,7 @@ def require_role(*roles: str):
         return current_user
 
     return dependency
+
+
+def get_customer_session_service(db: Annotated[Session, Depends(get_db)]) -> CustomerSessionService:
+    return CustomerSessionService(db)
