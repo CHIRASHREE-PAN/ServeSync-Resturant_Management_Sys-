@@ -101,14 +101,22 @@ class Order(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True, nullable=False)
     session_id: Mapped[int] = mapped_column(ForeignKey("customer_sessions.id"), nullable=False)
-    status: Mapped[str] = mapped_column(String(50), nullable=False, default="pending")
+    status: Mapped[str] = mapped_column(String(50), nullable=False, default="ORDER_RECEIVED")
     subtotal: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False, default=0)
+    sgst: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False, default=0)
+    cgst: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False, default=0)
     tax: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False, default=0)
     total: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False, default=0)
+    estimated_cooking_time: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
 
     session: Mapped[CustomerSession] = relationship(back_populates="orders")
-    order_items: Mapped[list["OrderItem"]] = relationship(back_populates="order")
+    order_items: Mapped[list["OrderItem"]] = relationship(
+        back_populates="order", cascade="all, delete-orphan"
+    )
+    waiter_notifications: Mapped[list["WaiterNotification"]] = relationship(
+        back_populates="order", cascade="all, delete-orphan"
+    )
 
 
 class OrderItem(Base):
@@ -125,12 +133,23 @@ class OrderItem(Base):
     menu_item: Mapped[MenuItem] = relationship(back_populates="order_items")
 
 
+class WaiterNotification(Base):
+    __tablename__ = "waiter_notifications"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    order_id: Mapped[int] = mapped_column(ForeignKey("orders.id"), nullable=False)
+    is_read: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
+
+    order: Mapped[Order] = relationship(back_populates="waiter_notifications")
+
+
 class WaiterCall(Base):
     __tablename__ = "waiter_calls"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True, nullable=False)
     session_id: Mapped[int] = mapped_column(ForeignKey("customer_sessions.id"), nullable=False)
-    status: Mapped[str] = mapped_column(String(50), nullable=False, default="open")
+    status: Mapped[str] = mapped_column(String(50), nullable=False, default="OPEN")
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
 
     session: Mapped[CustomerSession] = relationship(back_populates="waiter_calls")
@@ -146,6 +165,7 @@ class Bill(Base):
     total: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False, default=0)
     pdf_path: Mapped[str | None] = mapped_column(String(255), nullable=True)
     is_paid: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
 
     session: Mapped[CustomerSession] = relationship(back_populates="bills")
 

@@ -65,6 +65,18 @@ class InvalidCustomerSessionStateError(AppError):
         super().__init__(message)
 
 
+class WaiterCallNotFoundError(AppError):
+    def __init__(self, message: str = "Waiter call not found"):
+        self.message = message
+        super().__init__(message)
+
+
+class WaiterCallConflictError(AppError):
+    def __init__(self, message: str = "An OPEN waiter call already exists for this customer session"):
+        self.message = message
+        super().__init__(message)
+
+
 class MenuItemNotFoundError(AppError):
     def __init__(self, message: str = "Menu item not found"):
         self.message = message
@@ -118,6 +130,8 @@ HTTP_STATUS_MAP = {
     TableSessionConflictError: status.HTTP_409_CONFLICT,
     CustomerSessionNotFoundError: status.HTTP_404_NOT_FOUND,
     InvalidCustomerSessionStateError: status.HTTP_400_BAD_REQUEST,
+    WaiterCallNotFoundError: status.HTTP_404_NOT_FOUND,
+    WaiterCallConflictError: status.HTTP_409_CONFLICT,
     MenuItemNotFoundError: status.HTTP_404_NOT_FOUND,
     MenuItemConflictError: status.HTTP_409_CONFLICT,
     UnauthorizedError: status.HTTP_401_UNAUTHORIZED,

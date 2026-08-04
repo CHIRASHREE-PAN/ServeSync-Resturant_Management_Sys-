@@ -80,8 +80,34 @@ def ensure_customer_session_schema() -> None:
         connection.execute(text("ALTER TABLE customer_sessions MODIFY COLUMN email VARCHAR(120) NOT NULL"))
 
 
+def ensure_order_schema() -> None:
+    """Bring pre-existing order tables in line with the current order contract."""
+    with engine.begin() as connection:
+        columns = {row[0] for row in connection.execute(text("SHOW COLUMNS FROM orders"))}
+
+        if "sgst" not in columns:
+            connection.execute(text("ALTER TABLE orders ADD COLUMN sgst DECIMAL(10, 2) NOT NULL DEFAULT 0"))
+        if "cgst" not in columns:
+            connection.execute(text("ALTER TABLE orders ADD COLUMN cgst DECIMAL(10, 2) NOT NULL DEFAULT 0"))
+        if "estimated_cooking_time" not in columns:
+            connection.execute(
+                text("ALTER TABLE orders ADD COLUMN estimated_cooking_time INT NOT NULL DEFAULT 0")
+            )
+
+        connection.execute(
+            text(
+                "UPDATE orders SET status = 'ORDER_RECEIVED' "
+                "WHERE status IS NULL OR LOWER(status) = 'pending'"
+            )
+        )
+        connection.execute(
+            text("ALTER TABLE orders MODIFY COLUMN status VARCHAR(50) NOT NULL DEFAULT 'ORDER_RECEIVED'")
+        )
+
+
 def initialize_database() -> None:
     create_database_if_not_exists()
     Base.metadata.create_all(bind=engine)
     ensure_customer_session_schema()
+    ensure_order_schema()
     print("Database tables ensured successfully.")

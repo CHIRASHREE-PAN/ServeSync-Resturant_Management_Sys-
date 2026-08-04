@@ -11,6 +11,11 @@ from app.api.routers.auth_router import router as auth_router
 from app.api.routers.category_router import router as category_router
 from app.api.routers.customer_session_router import router as customer_session_router
 from app.api.routers.menu_router import router as menu_router
+from app.api.routers.kitchen_router import router as kitchen_router
+from app.api.routers.order_router import router as order_router
+from app.api.routers.waiter_call_router import router as waiter_call_router
+from app.api.routers.waiter_router import router as waiter_router
+from app.api.routers.billing_router import router as billing_router
 from app.core.exceptions import AppError, get_http_exception
 from app.database import initialize_database
 
@@ -55,11 +60,22 @@ async def validation_exception_handler(_: Request, exc: RequestValidationError) 
     return JSONResponse(status_code=422, content={"detail": exc.errors()})
 
 
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(_: Request, exc: Exception) -> JSONResponse:
+    logger.exception("Unhandled internal server error", exc_info=exc)
+    return JSONResponse(status_code=500, content={"detail": "Internal server error."})
+
+
 app.include_router(auth_router)
 app.include_router(admin_router)
 app.include_router(customer_session_router)
+app.include_router(waiter_call_router)
+app.include_router(waiter_router)
+app.include_router(billing_router)
 app.include_router(category_router)
 app.include_router(menu_router)
+app.include_router(order_router)
+app.include_router(kitchen_router)
 
 
 @app.get("/")
