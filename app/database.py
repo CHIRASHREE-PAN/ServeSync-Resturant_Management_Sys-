@@ -105,9 +105,38 @@ def ensure_order_schema() -> None:
         )
 
 
+def ensure_feedback_schema() -> None:
+    """Bring pre-existing feedback tables in line with the feedback API contract."""
+    with engine.begin() as connection:
+        columns = {row[0] for row in connection.execute(text("SHOW COLUMNS FROM feedback"))}
+
+        if "created_at" not in columns:
+            connection.execute(
+                text(
+                    "ALTER TABLE feedback ADD COLUMN created_at DATETIME "
+                    "NOT NULL DEFAULT CURRENT_TIMESTAMP"
+                )
+            )
+
+        has_unique_session_index = connection.execute(
+            text(
+                "SELECT 1 FROM INFORMATION_SCHEMA.STATISTICS "
+                "WHERE TABLE_SCHEMA = DATABASE() "
+                "AND TABLE_NAME = 'feedback' "
+                "AND COLUMN_NAME = 'session_id' "
+                "AND NON_UNIQUE = 0 LIMIT 1"
+            )
+        ).scalar() is not None
+        if not has_unique_session_index:
+            connection.execute(
+                text("ALTER TABLE feedback ADD CONSTRAINT uq_feedback_session_id UNIQUE (session_id)")
+            )
+
+
 def initialize_database() -> None:
     create_database_if_not_exists()
     Base.metadata.create_all(bind=engine)
     ensure_customer_session_schema()
     ensure_order_schema()
+    ensure_feedback_schema()
     print("Database tables ensured successfully.")

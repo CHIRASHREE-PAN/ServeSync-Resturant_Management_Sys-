@@ -387,3 +387,123 @@ curl -X PUT http://127.0.0.1:8007/billing/1/paid -H "Authorization: Bearer <admi
 - `400`: the active session has no orders.
 - `409`: session is not `ACTIVE`, a bill already exists, or the bill is already paid.
 - `500`: PDF creation, email delivery, database, and unexpected server failures return a safe error response.
+
+## Feedback
+
+Customer feedback is submitted only after the corresponding bill is paid and its customer session is `COMPLETED`. Customers do not authenticate for submission. The `feedback.session_id` foreign key is unique, so a customer session can submit feedback once only.
+
+### POST /feedback
+
+Public endpoint. Rating must be an integer from 1 through 5; the comment is optional.
+
+Request:
+```json
+{"session_id": 1, "rating": 5, "comment": "Excellent food and quick service."}
+```
+
+Response (`201 Created`):
+```json
+{"id": 1, "session_id": 1, "rating": 5, "comment": "Excellent food and quick service."}
+```
+
+```bash
+curl -X POST http://127.0.0.1:8007/feedback \
+  -H "Content-Type: application/json" \
+  -d '{"session_id":1,"rating":5,"comment":"Excellent food and quick service."}'
+```
+
+### GET /feedback
+
+Admin-only endpoint. Supports `page` (default `1`), `page_size` (default `20`, maximum `100`), and optional `rating` (1–5). Feedback is sorted newest first.
+
+Response (`200 OK`):
+```json
+{"items":[{"id":1,"session_id":1,"customer_name":"John Doe","customer_email":"john.doe@example.com","table_number":8,"rating":5,"comment":"Excellent food and quick service.","submitted_at":"2026-08-05T12:15:00"}],"page":1,"page_size":20,"total_items":1,"total_pages":1}
+```
+
+```bash
+curl "http://127.0.0.1:8007/feedback?page=1&page_size=20&rating=5" \
+  -H "Authorization: Bearer <admin-jwt>"
+```
+
+### GET /feedback/{id}
+
+Admin-only endpoint. Returns the feedback, session ID, customer name/email, and table number.
+
+Response (`200 OK`):
+```json
+{"id":1,"session_id":1,"customer_name":"John Doe","customer_email":"john.doe@example.com","table_number":8,"rating":5,"comment":"Excellent food and quick service.","submitted_at":"2026-08-05T12:15:00"}
+```
+
+```bash
+curl http://127.0.0.1:8007/feedback/1 -H "Authorization: Bearer <admin-jwt>"
+```
+
+### DELETE /feedback/{id}
+
+Admin-only endpoint.
+
+Response (`200 OK`):
+```json
+{"message":"Feedback deleted successfully."}
+```
+
+```bash
+curl -X DELETE http://127.0.0.1:8007/feedback/1 -H "Authorization: Bearer <admin-jwt>"
+```
+
+### Validation and errors
+
+- `401`: missing or invalid JWT on admin endpoints.
+- `403`: authenticated user is not an admin.
+- `404`: customer session, bill, or feedback does not exist.
+- `409`: session is not `COMPLETED`, bill is unpaid, or feedback has already been submitted.
+- `422`: rating or pagination input is invalid (including ratings outside 1–5).
+- `500`: database and unexpected server failures return a safe error response.
+
+## Reports and Charts
+
+All report and chart endpoints require an admin bearer JWT. Reports use order, bill, session, feedback, menu-item, and category aggregates only; no reporting tables are created. Revenue and average order value are based on paid bills. Empty periods return zero totals, empty labels/values where appropriate, and `null` for an unavailable average rating or top item/category.
+
+### Reports
+
+- `GET /admin/reports/daily?date=2026-08-05` returns daily orders, paid-bill revenue, bills, sessions, top item/category, and feedback summary.
+- `GET /admin/reports/monthly?year=2026&month=8` returns the monthly summary, including served-order count.
+- `GET /admin/reports/yearly?year=2026` returns annual totals and all twelve monthly paid-sales points.
+- `GET /admin/reports?from=2026-08-01&to=2026-08-31` returns the complete inclusive date-range aggregate.
+- `GET /admin/reports/monthly/pdf?year=2026&month=8` writes `uploads/reports/August_2026_Report.pdf` and returns `{"pdf_path":"uploads/reports/August_2026_Report.pdf"}`.
+- `GET /admin/reports/monthly/excel?year=2026&month=8` writes `uploads/reports/August_2026_Report.xlsx` and returns `{"excel_path":"uploads/reports/August_2026_Report.xlsx"}`.
+
+Example daily response:
+```json
+{"date":"2026-08-05","orders":45,"revenue":21540.5,"bills_generated":43,"bills_paid":41,"active_sessions":6,"completed_sessions":39,"average_order_value":525.38,"most_ordered_item":"Chicken Biryani","top_category":"Main Course","feedback_count":31,"average_rating":4.8}
+```
+
+### Chart data
+
+All chart endpoints accept an optional `year` (default: current year) and return JSON only for rendering by the frontend:
+
+- `GET /admin/charts/revenue`
+- `GET /admin/charts/top-items`
+- `GET /admin/charts/top-categories`
+- `GET /admin/charts/order-status`
+- `GET /admin/charts/ratings`
+
+Example:
+```json
+{"labels":["Jan","Feb","Mar"],"values":[250000,275000,301000]}
+```
+
+```bash
+curl "http://127.0.0.1:8007/admin/reports/monthly?year=2026&month=8" \
+  -H "Authorization: Bearer <admin-jwt>"
+curl "http://127.0.0.1:8007/admin/charts/revenue?year=2026" \
+  -H "Authorization: Bearer <admin-jwt>"
+```
+
+### Validation and errors
+
+- `401`: JWT is missing or invalid.
+- `403`: authenticated user is not an admin.
+- `422`: malformed, future, out-of-range, or inverted date input.
+- `500`: database, PDF, Excel, or unexpected internal failure. Server logs include the affected report endpoint and parameters.

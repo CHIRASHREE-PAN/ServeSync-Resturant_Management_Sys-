@@ -16,6 +16,8 @@ from app.api.routers.order_router import router as order_router
 from app.api.routers.waiter_call_router import router as waiter_call_router
 from app.api.routers.waiter_router import router as waiter_router
 from app.api.routers.billing_router import router as billing_router
+from app.api.routers.feedback_router import router as feedback_router
+from app.api.routers.reports_router import router as reports_router
 from app.core.exceptions import AppError, get_http_exception
 from app.database import initialize_database
 
@@ -72,6 +74,8 @@ app.include_router(customer_session_router)
 app.include_router(waiter_call_router)
 app.include_router(waiter_router)
 app.include_router(billing_router)
+app.include_router(feedback_router)
+app.include_router(reports_router)
 app.include_router(category_router)
 app.include_router(menu_router)
 app.include_router(order_router)
