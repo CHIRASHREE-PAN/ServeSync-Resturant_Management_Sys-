@@ -28,3 +28,8 @@ class OTPRepository:
     def mark_used(self, otp_record: OTP) -> None:
         otp_record.is_used = True
         self.db.commit()
+
+    def delete_otp(self, otp_id: int) -> None:
+        otp_record = self.db.get(OTP, otp_id)
+        if otp_record:
+            self.db.delete(otp_record)

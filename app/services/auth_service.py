@@ -60,8 +60,13 @@ class AuthService:
         if expires_at < datetime.now(timezone.utc):
             raise ExpiredOtpError()
 
-        self.otp_repo.mark_used(otp_record)
-        token = create_access_token(user.id, user.name, user.email, user.role)
+        try:
+            token = create_access_token(user.id, user.name, user.email, user.role)
+            self.otp_repo.delete_otp(otp_record.id)
+            self.db.commit()
+        except Exception:
+            self.db.rollback()
+            raise
         return {
             "access_token": token,
             "token_type": "bearer",
