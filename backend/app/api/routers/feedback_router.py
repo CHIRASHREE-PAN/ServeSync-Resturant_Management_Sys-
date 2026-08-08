@@ -63,4 +63,8 @@ def delete_feedback(
     db: Session = Depends(get_db),
     _: object = Depends(require_admin),
 ) -> MessageResponse:
+<<<<<<< HEAD:backend/app/api/routers/feedback_router.py
     return MessageResponse(**FeedbackService(db).delete_feedback(feedback_id))
+=======
+    return MessageResponse(**FeedbackService(db).delete_feedback(feedback_id))
+>>>>>>> 463124af02341a26f11446ceb35802d78cace07e:app/api/routers/feedback_router.py

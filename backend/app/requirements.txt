@@ -9,4 +9,8 @@ PyJWT==2.10.1
 email-validator==2.2.0
 alembic==1.14.0
 reportlab==4.2.2
+<<<<<<< HEAD:backend/app/requirements.txt
 openpyxl==3.1.5
+=======
+openpyxl==3.1.5
+>>>>>>> 463124af02341a26f11446ceb35802d78cace07e:app/requirements.txt

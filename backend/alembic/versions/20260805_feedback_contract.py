@@ -45,4 +45,8 @@ def downgrade() -> None:
         op.drop_constraint("uq_feedback_session_id", "feedback", type_="unique")
     columns = {column["name"] for column in inspector.get_columns("feedback")}
     if "created_at" in columns:
+<<<<<<< HEAD:backend/alembic/versions/20260805_feedback_contract.py
         op.drop_column("feedback", "created_at")
+=======
+        op.drop_column("feedback", "created_at")
+>>>>>>> 463124af02341a26f11446ceb35802d78cace07e:alembic/versions/20260805_feedback_contract.py

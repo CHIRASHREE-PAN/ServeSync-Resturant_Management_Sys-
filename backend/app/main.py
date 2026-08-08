@@ -19,7 +19,10 @@ from app.api.routers.waiter_router import router as waiter_router
 from app.api.routers.billing_router import router as billing_router
 from app.api.routers.feedback_router import router as feedback_router
 from app.api.routers.reports_router import router as reports_router
+<<<<<<< HEAD:backend/app/main.py
 
+=======
+>>>>>>> 463124af02341a26f11446ceb35802d78cace07e:app/main.py
 from app.core.exceptions import AppError, get_http_exception
 from app.database import initialize_database
 

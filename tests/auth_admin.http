@@ -1,0 +1,1246 @@
+### Request OTP
+POST http://127.0.0.1:8007/auth/request-otp
+Content-Type: application/json
+
+{"email": "adm.in@gmail.com"}
+
+### Verify OTP
+POST http://127.0.0.1:8007/auth/verify-otp
+Content-Type: application/json
+
+{"email": "adm.in@gmail.com", "otp": "123456"}
+
+### Get current user
+GET http://127.0.0.1:8007/auth/me
+Authorization: Bearer <token>
+
+### Create staff
+POST http://127.0.0.1:8007/admin/users
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{"name": "Kitchen Staff", "email": "kitchen.staff@example.com", "role": "kitchen"}
+
+### List staff
+GET http://127.0.0.1:8007/admin/users?page=1&page_size=20&role=admin
+Authorization: Bearer <token>
+
+### Get staff by id
+GET http://127.0.0.1:8007/admin/users/2
+Authorization: Bearer <token>
+
+### Update staff
+PUT http://127.0.0.1:8007/admin/users/2
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{"name": "Updated Kitchen", "role": "kitchen"}
+
+### Delete staff
+DELETE http://127.0.0.1:8007/admin/users/2
+Authorization: Bearer <token>
+
+### Create customer session
+POST http://127.0.0.1:8007/customer/session
+Content-Type: application/json
+
+{"name": "John Doe", "email": "john.doe@example.com", "number_of_people": 4, "table_number": 8}
+
+### Get customer session by id
+GET http://127.0.0.1:8007/customer/session/1
+
+### Update customer session by id
+PUT http://127.0.0.1:8007/customer/session/1
+Content-Type: application/json
+
+{"name": "John Doe", "email": "john.doe@example.com", "number_of_people": 5, "table_number": 8}
+
+### Create waiter call (customer authentication is not required)
+POST http://127.0.0.1:8007/customer/waiter-call
+Content-Type: application/json
+
+{"session_id": 1}
+
+# HTTP/1.1 201 Created
+# {
+#   "id": 1,
+#   "session_id": 1,
+#   "status": "OPEN",
+#   "created_at": "2026-08-04T12:00:00"
+# }
+
+### Get waiter call by id (customer authentication is not required)
+GET http://127.0.0.1:8007/customer/waiter-call/1
+
+# HTTP/1.1 200 OK
+# {
+#   "id": 1,
+#   "session_id": 1,
+#   "status": "OPEN",
+#   "created_at": "2026-08-04T12:00:00"
+# }
+
+### Create category (admin only)
+POST http://127.0.0.1:8007/categories
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{"name": "Starters", "description": "Appetizers and small plates"}
+
+### List categories (public)
+GET http://127.0.0.1:8007/categories?page=1&page_size=20
+
+### Search categories (public)
+GET http://127.0.0.1:8007/categories?page=1&page_size=20&search=starter
+
+### Get category by id (public)
+GET http://127.0.0.1:8007/categories/1
+
+### Update category (admin only)
+PUT http://127.0.0.1:8007/categories/1
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{"name": "Updated Starters", "description": "Updated appetizer selection"}
+
+### Delete category (admin only)
+DELETE http://127.0.0.1:8007/categories/1
+Authorization: Bearer <token>
+
+### Create menu item (admin only; category_id must exist)
+POST http://127.0.0.1:8007/menu
+Authorization: Bearer <token>
+Content-Type: multipart/form-data; boundary=MenuBoundary
+
+--MenuBoundary
+Content-Disposition: form-data; name="category_id"
+
+1
+--MenuBoundary
+Content-Disposition: form-data; name="name"
+
+Paneer Tikka
+--MenuBoundary
+Content-Disposition: form-data; name="description"
+
+Grilled cottage cheese with spices
+--MenuBoundary
+Content-Disposition: form-data; name="price"
+
+249.00
+--MenuBoundary
+Content-Disposition: form-data; name="calories"
+
+320
+--MenuBoundary
+Content-Disposition: form-data; name="cook_time"
+
+20
+--MenuBoundary
+Content-Disposition: form-data; name="availability"
+
+true
+--MenuBoundary
+Content-Disposition: form-data; name="chef_special"
+
+true
+--MenuBoundary
+Content-Disposition: form-data; name="best_seller"
+
+false
+--MenuBoundary--
+
+### List available menu items (public)
+GET http://127.0.0.1:8007/menu?page=1&page_size=20&sort_by=name&sort_dir=asc
+
+### Filter menu items by category and chef special (public)
+GET http://127.0.0.1:8007/menu?page=1&page_size=20&category_id=1&chef_special=true
+
+### Search menu items by name (public)
+GET http://127.0.0.1:8007/menu/search?query=paneer
+
+### Get menu item by id (public)
+GET http://127.0.0.1:8007/menu/1
+
+### Get available menu items by category (public)
+GET http://127.0.0.1:8007/menu/category/1
+
+### Update menu item (admin only)
+PUT http://127.0.0.1:8007/menu/1
+Authorization: Bearer <token>
+Content-Type: multipart/form-data; boundary=MenuBoundary
+
+--MenuBoundary
+Content-Disposition: form-data; name="price"
+
+269.00
+--MenuBoundary
+Content-Disposition: form-data; name="best_seller"
+
+true
+--MenuBoundary--
+
+### Delete menu item (admin only)
+DELETE http://127.0.0.1:8007/menu/1
+Authorization: Bearer <token>
+
+### cURL examples
+# curl -X POST http://127.0.0.1:8007/customer/session -H "Content-Type: application/json" -d '{"name":"John Doe","email":"john.doe@example.com","number_of_people":4,"table_number":8}'
+# curl -X GET http://127.0.0.1:8007/customer/session/1
+# curl -X PUT http://127.0.0.1:8007/customer/session/1 -H "Content-Type: application/json" -d '{"number_of_people":5}'
+# curl -X POST http://127.0.0.1:8007/customer/waiter-call -H "Content-Type: application/json" -d '{"session_id":1}'
+# curl http://127.0.0.1:8007/customer/waiter-call/1
+
+### Kitchen JWT obtained by authenticating a user whose role is kitchen
+@kitchenToken = <paste-kitchen-jwt-here>
+
+### List ORDER_RECEIVED and PREPARING orders (kitchen only)
+GET http://127.0.0.1:8007/kitchen/orders
+Authorization: Bearer {{kitchenToken}}
+
+### Move an ORDER_RECEIVED order to PREPARING (kitchen only)
+PUT http://127.0.0.1:8007/kitchen/orders/1/preparing
+Authorization: Bearer {{kitchenToken}}
+
+### Move a PREPARING order to READY_TO_SERVE and create a waiter notification
+PUT http://127.0.0.1:8007/kitchen/orders/1/ready
+Authorization: Bearer {{kitchenToken}}
+
+### Kitchen cURL examples
+# curl http://127.0.0.1:8007/kitchen/orders -H "Authorization: Bearer <kitchen-jwt>"
+# curl -X PUT http://127.0.0.1:8007/kitchen/orders/1/preparing -H "Authorization: Bearer <kitchen-jwt>"
+# curl -X PUT http://127.0.0.1:8007/kitchen/orders/1/ready -H "Authorization: Bearer <kitchen-jwt>"
+
+### Waiter JWT obtained by authenticating a user whose role is waiter
+@waiterToken = <paste-waiter-jwt-here>
+
+### List unread READY_TO_SERVE order notifications (waiter only)
+GET http://127.0.0.1:8007/waiter/orders
+Authorization: Bearer {{waiterToken}}
+
+# HTTP/1.1 200 OK
+# [{"notification_id":1,"order_id":1,"table_number":8,"customer_name":"John Doe","order_status":"READY_TO_SERVE","ordered_items":[{"menu_item_name":"Paneer Tikka","quantity":2,"special_instruction":"Less spicy"}],"subtotal":"498.00","tax":"24.90","total":"522.90","estimated_cooking_time":20,"created_at":"2026-08-04T12:00:00"}]
+
+### List OPEN waiter calls (waiter only)
+GET http://127.0.0.1:8007/waiter/calls
+Authorization: Bearer {{waiterToken}}
+
+# HTTP/1.1 200 OK
+# [{"call_id":1,"session_id":1,"table_number":8,"customer_name":"John Doe","customer_email":"john.doe@example.com","number_of_people":4,"status":"OPEN","created_at":"2026-08-04T12:05:00"}]
+
+### Mark a READY_TO_SERVE order as SERVED (waiter only)
+PUT http://127.0.0.1:8007/waiter/orders/1/served
+Authorization: Bearer {{waiterToken}}
+
+# HTTP/1.1 200 OK
+# {"order_id":1,"session_id":1,"table_number":8,"customer_name":"John Doe","order_status":"SERVED","ordered_items":[{"menu_item_name":"Paneer Tikka","quantity":2,"special_instruction":"Less spicy"}],"subtotal":"498.00","tax":"24.90","total":"522.90","estimated_cooking_time":20,"created_at":"2026-08-04T12:00:00"}
+
+### Complete an OPEN waiter call (waiter only)
+PUT http://127.0.0.1:8007/waiter/calls/1/completed
+Authorization: Bearer {{waiterToken}}
+
+# HTTP/1.1 200 OK
+# {"call_id":1,"session_id":1,"table_number":8,"customer_name":"John Doe","customer_email":"john.doe@example.com","number_of_people":4,"status":"COMPLETED","created_at":"2026-08-04T12:05:00"}
+
+### Waiter cURL examples
+# curl http://127.0.0.1:8007/waiter/orders -H "Authorization: Bearer <waiter-jwt>"
+# curl http://127.0.0.1:8007/waiter/calls -H "Authorization: Bearer <waiter-jwt>"
+# curl -X PUT http://127.0.0.1:8007/waiter/orders/1/served -H "Authorization: Bearer <waiter-jwt>"
+# curl -X PUT http://127.0.0.1:8007/waiter/calls/1/completed -H "Authorization: Bearer <waiter-jwt>"
+
+### Billing token: use an admin or waiter JWT
+@billingToken = <paste-admin-or-waiter-jwt-here>
+
+### Generate a bill and email its PDF invoice (admin or waiter only)
+POST http://127.0.0.1:8007/billing/request
+Authorization: Bearer {{billingToken}}
+Content-Type: application/json
+
+{"session_id": 1}
+
+# HTTP/1.1 201 Created
+# {"bill_id":1,"session_id":1,"customer_name":"John Doe","customer_email":"john.doe@example.com","table_number":8,"ordered_items":[{"order_id":1,"menu_item_name":"Paneer Tikka","quantity":2,"unit_price":"249.00","item_total":"498.00"}],"subtotal":"522.90","cgst":"13.07","sgst":"13.07","total_tax":"26.14","grand_total":"549.04","pdf_path":"uploads/invoices/invoice_1.pdf","is_paid":false,"created_at":"2026-08-04T12:10:00"}
+
+### Get a generated bill by customer session id
+GET http://127.0.0.1:8007/billing/1
+Authorization: Bearer {{billingToken}}
+
+# HTTP/1.1 200 OK
+# {"bill_id":1,"session_id":1,"customer_name":"John Doe","customer_email":"john.doe@example.com","table_number":8,"ordered_items":[{"order_id":1,"menu_item_name":"Paneer Tikka","quantity":2,"unit_price":"249.00","item_total":"498.00"}],"subtotal":"522.90","cgst":"13.07","sgst":"13.07","total_tax":"26.14","grand_total":"549.04","pdf_path":"uploads/invoices/invoice_1.pdf","is_paid":false,"created_at":"2026-08-04T12:10:00"}
+
+### Mark a bill as paid and complete its customer session (admin or waiter only)
+PUT http://127.0.0.1:8007/billing/1/paid
+Authorization: Bearer {{billingToken}}
+
+# HTTP/1.1 200 OK
+# {"bill_id":1,"session_id":1,"customer_name":"John Doe","customer_email":"john.doe@example.com","table_number":8,"ordered_items":[{"order_id":1,"menu_item_name":"Paneer Tikka","quantity":2,"unit_price":"249.00","item_total":"498.00"}],"subtotal":"522.90","cgst":"13.07","sgst":"13.07","total_tax":"26.14","grand_total":"549.04","pdf_path":"uploads/invoices/invoice_1.pdf","is_paid":true,"created_at":"2026-08-04T12:10:00"}
+
+### Billing cURL examples
+# curl -X POST http://127.0.0.1:8007/billing/request -H "Authorization: Bearer <admin-or-waiter-jwt>" -H "Content-Type: application/json" -d '{"session_id":1}'
+# curl http://127.0.0.1:8007/billing/1 -H "Authorization: Bearer <admin-or-waiter-jwt>"
+# curl -X PUT http://127.0.0.1:8007/billing/1/paid -H "Authorization: Bearer <admin-or-waiter-jwt>"
+
+### Feedback: customer submits feedback after bill payment (no JWT required)
+POST http://127.0.0.1:8007/feedback
+Content-Type: application/json
+
+{"session_id": 1, "rating": 5, "comment": "Excellent food and quick service."}
+
+# HTTP/1.1 201 Created
+# {"id":1,"session_id":1,"rating":5,"comment":"Excellent food and quick service."}
+
+### Feedback: list newest feedback (admin only)
+@feedbackAdminToken = <paste-admin-jwt-here>
+GET http://127.0.0.1:8007/feedback?page=1&page_size=20&rating=5
+Authorization: Bearer {{feedbackAdminToken}}
+
+# HTTP/1.1 200 OK
+# {"items":[{"id":1,"session_id":1,"customer_name":"John Doe","customer_email":"john.doe@example.com","table_number":8,"rating":5,"comment":"Excellent food and quick service.","submitted_at":"2026-08-05T12:15:00"}],"page":1,"page_size":20,"total_items":1,"total_pages":1}
+
+### Feedback: get one feedback (admin only)
+GET http://127.0.0.1:8007/feedback/1
+Authorization: Bearer {{feedbackAdminToken}}
+
+# HTTP/1.1 200 OK
+# {"id":1,"session_id":1,"customer_name":"John Doe","customer_email":"john.doe@example.com","table_number":8,"rating":5,"comment":"Excellent food and quick service.","submitted_at":"2026-08-05T12:15:00"}
+
+### Feedback: delete feedback (admin only)
+DELETE http://127.0.0.1:8007/feedback/1
+Authorization: Bearer {{feedbackAdminToken}}
+
+# HTTP/1.1 200 OK
+# {"message":"Feedback deleted successfully."}
+
+### Feedback cURL examples
+# curl -X POST http://127.0.0.1:8007/feedback -H "Content-Type: application/json" -d '{"session_id":1,"rating":5,"comment":"Excellent food and quick service."}'
+# curl "http://127.0.0.1:8007/feedback?page=1&page_size=20&rating=5" -H "Authorization: Bearer <admin-jwt>"
+# curl http://127.0.0.1:8007/feedback/1 -H "Authorization: Bearer <admin-jwt>"
+# curl -X DELETE http://127.0.0.1:8007/feedback/1 -H "Authorization: Bearer <admin-jwt>"
+
+### Reports and charts (all endpoints require an admin JWT)
+@reportAdminToken = <paste-admin-jwt-here>
+
+### Daily report
+GET http://127.0.0.1:8007/admin/reports/daily?date=2026-08-05
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"date":"2026-08-05","orders":45,"revenue":21540.5,"bills_generated":43,"bills_paid":41,"active_sessions":6,"completed_sessions":39,"average_order_value":525.38,"most_ordered_item":"Chicken Biryani","top_category":"Main Course","feedback_count":31,"average_rating":4.8}
+
+### Monthly report
+GET http://127.0.0.1:8007/admin/reports/monthly?year=2026&month=8
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"month":"August","year":2026,"total_orders":853,"completed_orders":835,"revenue":428650.25,"bills_generated":842,"bills_paid":831,"average_order_value":515.82,"top_item":"Chicken Biryani","top_category":"Main Course","feedback_count":351,"average_rating":4.7}
+
+### Yearly report
+GET http://127.0.0.1:8007/admin/reports/yearly?year=2026
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"year":2026,"total_revenue":4587500,"total_orders":8654,"average_rating":4.6,"monthly_sales":[{"month":"January","revenue":250000,"orders":512}]}
+
+### Date-range report
+GET http://127.0.0.1:8007/admin/reports?from=2026-08-01&to=2026-08-31
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"from_date":"2026-08-01","to_date":"2026-08-31","orders":853,"revenue":428650.25,"paid_bills":831,"average_rating":4.7,"most_ordered_item":"Chicken Biryani","top_category":"Main Course","average_order_value":515.82,"customer_sessions":842}
+
+### Generate monthly PDF report
+GET http://127.0.0.1:8007/admin/reports/monthly/pdf?year=2026&month=8
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"pdf_path":"uploads/reports/August_2026_Report.pdf"}
+
+### Generate monthly Excel report
+GET http://127.0.0.1:8007/admin/reports/monthly/excel?year=2026&month=8
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"excel_path":"uploads/reports/August_2026_Report.xlsx"}
+
+### Revenue chart data
+GET http://127.0.0.1:8007/admin/charts/revenue?year=2026
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"labels":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"values":[250000,275000,301000,287000,315000,330000,365000,428000,0,0,0,0]}
+
+### Top-items chart data
+GET http://127.0.0.1:8007/admin/charts/top-items?year=2026
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"labels":["Chicken Biryani","Burger"],"values":[541,436]}
+
+### Top-categories chart data
+GET http://127.0.0.1:8007/admin/charts/top-categories?year=2026
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"labels":["Main Course","Fast Food"],"values":[1250,850]}
+
+### Order-status chart data
+GET http://127.0.0.1:8007/admin/charts/order-status?year=2026
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"labels":["Order Received","Preparing","Ready To Serve","Served"],"values":[2,3,1,524]}
+
+### Ratings chart data
+GET http://127.0.0.1:8007/admin/charts/ratings?year=2026
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"labels":["1 Star","2 Star","3 Star","4 Star","5 Star"],"values":[2,5,18,65,240]}
+
+### Reports cURL examples
+# curl "http://127.0.0.1:8007/admin/reports/daily?date=2026-08-05" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/reports/monthly?year=2026&month=8" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/reports/yearly?year=2026" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/reports?from=2026-08-01&to=2026-08-31" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/reports/monthly/pdf?year=2026&month=8" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/reports/monthly/excel?year=2026&month=8" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/charts/revenue?year=2026" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/charts/top-items?year=2026" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/charts/top-categories?year=2026" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/charts/order-status?year=2026" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/charts/ratings?year=2026" -H "Authorization: Bearer <admin-jwt>"
+
+
+
+### Request OTP
+POST http://127.0.0.1:8007/auth/request-otp
+Content-Type: application/json
+
+{"email": "adm.in@gmail.com"}
+
+### Verify OTP
+POST http://127.0.0.1:8007/auth/verify-otp
+Content-Type: application/json
+
+{"email": "adm.in@gmail.com", "otp": "123456"}
+
+### Get current user
+GET http://127.0.0.1:8007/auth/me
+Authorization: Bearer <token>
+
+### Create staff
+POST http://127.0.0.1:8007/admin/users
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{"name": "Kitchen Staff", "email": "kitchen.staff@example.com", "role": "kitchen"}
+
+### List staff
+GET http://127.0.0.1:8007/admin/users?page=1&page_size=20&role=admin
+Authorization: Bearer <token>
+
+### Get staff by id
+GET http://127.0.0.1:8007/admin/users/2
+Authorization: Bearer <token>
+
+### Update staff
+PUT http://127.0.0.1:8007/admin/users/2
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{"name": "Updated Kitchen", "role": "kitchen"}
+
+### Delete staff
+DELETE http://127.0.0.1:8007/admin/users/2
+Authorization: Bearer <token>
+
+### Create customer session
+POST http://127.0.0.1:8007/customer/session
+Content-Type: application/json
+
+{"name": "John Doe", "email": "john.doe@example.com", "number_of_people": 4, "table_number": 8}
+
+### Get customer session by id
+GET http://127.0.0.1:8007/customer/session/1
+
+### Update customer session by id
+PUT http://127.0.0.1:8007/customer/session/1
+Content-Type: application/json
+
+{"name": "John Doe", "email": "john.doe@example.com", "number_of_people": 5, "table_number": 8}
+
+### Create waiter call (customer authentication is not required)
+POST http://127.0.0.1:8007/customer/waiter-call
+Content-Type: application/json
+
+{"session_id": 1}
+
+# HTTP/1.1 201 Created
+# {
+#   "id": 1,
+#   "session_id": 1,
+#   "status": "OPEN",
+#   "created_at": "2026-08-04T12:00:00"
+# }
+
+### Get waiter call by id (customer authentication is not required)
+GET http://127.0.0.1:8007/customer/waiter-call/1
+
+# HTTP/1.1 200 OK
+# {
+#   "id": 1,
+#   "session_id": 1,
+#   "status": "OPEN",
+#   "created_at": "2026-08-04T12:00:00"
+# }
+
+### Create category (admin only)
+POST http://127.0.0.1:8007/categories
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{"name": "Starters", "description": "Appetizers and small plates"}
+
+### List categories (public)
+GET http://127.0.0.1:8007/categories?page=1&page_size=20
+
+### Search categories (public)
+GET http://127.0.0.1:8007/categories?page=1&page_size=20&search=starter
+
+### Get category by id (public)
+GET http://127.0.0.1:8007/categories/1
+
+### Update category (admin only)
+PUT http://127.0.0.1:8007/categories/1
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{"name": "Updated Starters", "description": "Updated appetizer selection"}
+
+### Delete category (admin only)
+DELETE http://127.0.0.1:8007/categories/1
+Authorization: Bearer <token>
+
+### Create menu item (admin only; category_id must exist)
+POST http://127.0.0.1:8007/menu
+Authorization: Bearer <token>
+Content-Type: multipart/form-data; boundary=MenuBoundary
+
+--MenuBoundary
+Content-Disposition: form-data; name="category_id"
+
+1
+--MenuBoundary
+Content-Disposition: form-data; name="name"
+
+Paneer Tikka
+--MenuBoundary
+Content-Disposition: form-data; name="description"
+
+Grilled cottage cheese with spices
+--MenuBoundary
+Content-Disposition: form-data; name="price"
+
+249.00
+--MenuBoundary
+Content-Disposition: form-data; name="calories"
+
+320
+--MenuBoundary
+Content-Disposition: form-data; name="cook_time"
+
+20
+--MenuBoundary
+Content-Disposition: form-data; name="availability"
+
+true
+--MenuBoundary
+Content-Disposition: form-data; name="chef_special"
+
+true
+--MenuBoundary
+Content-Disposition: form-data; name="best_seller"
+
+false
+--MenuBoundary--
+
+### List available menu items (public)
+GET http://127.0.0.1:8007/menu?page=1&page_size=20&sort_by=name&sort_dir=asc
+
+### Filter menu items by category and chef special (public)
+GET http://127.0.0.1:8007/menu?page=1&page_size=20&category_id=1&chef_special=true
+
+### Search menu items by name (public)
+GET http://127.0.0.1:8007/menu/search?query=paneer
+
+### Get menu item by id (public)
+GET http://127.0.0.1:8007/menu/1
+
+### Get available menu items by category (public)
+GET http://127.0.0.1:8007/menu/category/1
+
+### Update menu item (admin only)
+PUT http://127.0.0.1:8007/menu/1
+Authorization: Bearer <token>
+Content-Type: multipart/form-data; boundary=MenuBoundary
+
+--MenuBoundary
+Content-Disposition: form-data; name="price"
+
+269.00
+--MenuBoundary
+Content-Disposition: form-data; name="best_seller"
+
+true
+--MenuBoundary--
+
+### Delete menu item (admin only)
+DELETE http://127.0.0.1:8007/menu/1
+Authorization: Bearer <token>
+
+### cURL examples
+# curl -X POST http://127.0.0.1:8007/customer/session -H "Content-Type: application/json" -d '{"name":"John Doe","email":"john.doe@example.com","number_of_people":4,"table_number":8}'
+# curl -X GET http://127.0.0.1:8007/customer/session/1
+# curl -X PUT http://127.0.0.1:8007/customer/session/1 -H "Content-Type: application/json" -d '{"number_of_people":5}'
+# curl -X POST http://127.0.0.1:8007/customer/waiter-call -H "Content-Type: application/json" -d '{"session_id":1}'
+# curl http://127.0.0.1:8007/customer/waiter-call/1
+
+### Kitchen JWT obtained by authenticating a user whose role is kitchen
+@kitchenToken = <paste-kitchen-jwt-here>
+
+### List ORDER_RECEIVED and PREPARING orders (kitchen only)
+GET http://127.0.0.1:8007/kitchen/orders
+Authorization: Bearer {{kitchenToken}}
+
+### Move an ORDER_RECEIVED order to PREPARING (kitchen only)
+PUT http://127.0.0.1:8007/kitchen/orders/1/preparing
+Authorization: Bearer {{kitchenToken}}
+
+### Move a PREPARING order to READY_TO_SERVE and create a waiter notification
+PUT http://127.0.0.1:8007/kitchen/orders/1/ready
+Authorization: Bearer {{kitchenToken}}
+
+### Kitchen cURL examples
+# curl http://127.0.0.1:8007/kitchen/orders -H "Authorization: Bearer <kitchen-jwt>"
+# curl -X PUT http://127.0.0.1:8007/kitchen/orders/1/preparing -H "Authorization: Bearer <kitchen-jwt>"
+# curl -X PUT http://127.0.0.1:8007/kitchen/orders/1/ready -H "Authorization: Bearer <kitchen-jwt>"
+
+### Waiter JWT obtained by authenticating a user whose role is waiter
+@waiterToken = <paste-waiter-jwt-here>
+
+### List unread READY_TO_SERVE order notifications (waiter only)
+GET http://127.0.0.1:8007/waiter/orders
+Authorization: Bearer {{waiterToken}}
+
+# HTTP/1.1 200 OK
+# [{"notification_id":1,"order_id":1,"table_number":8,"customer_name":"John Doe","order_status":"READY_TO_SERVE","ordered_items":[{"menu_item_name":"Paneer Tikka","quantity":2,"special_instruction":"Less spicy"}],"subtotal":"498.00","tax":"24.90","total":"522.90","estimated_cooking_time":20,"created_at":"2026-08-04T12:00:00"}]
+
+### List OPEN waiter calls (waiter only)
+GET http://127.0.0.1:8007/waiter/calls
+Authorization: Bearer {{waiterToken}}
+
+# HTTP/1.1 200 OK
+# [{"call_id":1,"session_id":1,"table_number":8,"customer_name":"John Doe","customer_email":"john.doe@example.com","number_of_people":4,"status":"OPEN","created_at":"2026-08-04T12:05:00"}]
+
+### Mark a READY_TO_SERVE order as SERVED (waiter only)
+PUT http://127.0.0.1:8007/waiter/orders/1/served
+Authorization: Bearer {{waiterToken}}
+
+# HTTP/1.1 200 OK
+# {"order_id":1,"session_id":1,"table_number":8,"customer_name":"John Doe","order_status":"SERVED","ordered_items":[{"menu_item_name":"Paneer Tikka","quantity":2,"special_instruction":"Less spicy"}],"subtotal":"498.00","tax":"24.90","total":"522.90","estimated_cooking_time":20,"created_at":"2026-08-04T12:00:00"}
+
+### Complete an OPEN waiter call (waiter only)
+PUT http://127.0.0.1:8007/waiter/calls/1/completed
+Authorization: Bearer {{waiterToken}}
+
+# HTTP/1.1 200 OK
+# {"call_id":1,"session_id":1,"table_number":8,"customer_name":"John Doe","customer_email":"john.doe@example.com","number_of_people":4,"status":"COMPLETED","created_at":"2026-08-04T12:05:00"}
+
+### Waiter cURL examples
+# curl http://127.0.0.1:8007/waiter/orders -H "Authorization: Bearer <waiter-jwt>"
+# curl http://127.0.0.1:8007/waiter/calls -H "Authorization: Bearer <waiter-jwt>"
+# curl -X PUT http://127.0.0.1:8007/waiter/orders/1/served -H "Authorization: Bearer <waiter-jwt>"
+# curl -X PUT http://127.0.0.1:8007/waiter/calls/1/completed -H "Authorization: Bearer <waiter-jwt>"
+
+### Billing token: use an admin or waiter JWT
+@billingToken = <paste-admin-or-waiter-jwt-here>
+
+### Generate a bill and email its PDF invoice (admin or waiter only)
+POST http://127.0.0.1:8007/billing/request
+Authorization: Bearer {{billingToken}}
+Content-Type: application/json
+
+{"session_id": 1}
+
+# HTTP/1.1 201 Created
+# {"bill_id":1,"session_id":1,"customer_name":"John Doe","customer_email":"john.doe@example.com","table_number":8,"ordered_items":[{"order_id":1,"menu_item_name":"Paneer Tikka","quantity":2,"unit_price":"249.00","item_total":"498.00"}],"subtotal":"522.90","cgst":"13.07","sgst":"13.07","total_tax":"26.14","grand_total":"549.04","pdf_path":"uploads/invoices/invoice_1.pdf","is_paid":false,"created_at":"2026-08-04T12:10:00"}
+
+### Get a generated bill by customer session id
+GET http://127.0.0.1:8007/billing/1
+Authorization: Bearer {{billingToken}}
+
+# HTTP/1.1 200 OK
+# {"bill_id":1,"session_id":1,"customer_name":"John Doe","customer_email":"john.doe@example.com","table_number":8,"ordered_items":[{"order_id":1,"menu_item_name":"Paneer Tikka","quantity":2,"unit_price":"249.00","item_total":"498.00"}],"subtotal":"522.90","cgst":"13.07","sgst":"13.07","total_tax":"26.14","grand_total":"549.04","pdf_path":"uploads/invoices/invoice_1.pdf","is_paid":false,"created_at":"2026-08-04T12:10:00"}
+
+### Mark a bill as paid and complete its customer session (admin or waiter only)
+PUT http://127.0.0.1:8007/billing/1/paid
+Authorization: Bearer {{billingToken}}
+
+# HTTP/1.1 200 OK
+# {"bill_id":1,"session_id":1,"customer_name":"John Doe","customer_email":"john.doe@example.com","table_number":8,"ordered_items":[{"order_id":1,"menu_item_name":"Paneer Tikka","quantity":2,"unit_price":"249.00","item_total":"498.00"}],"subtotal":"522.90","cgst":"13.07","sgst":"13.07","total_tax":"26.14","grand_total":"549.04","pdf_path":"uploads/invoices/invoice_1.pdf","is_paid":true,"created_at":"2026-08-04T12:10:00"}
+
+### Billing cURL examples
+# curl -X POST http://127.0.0.1:8007/billing/request -H "Authorization: Bearer <admin-or-waiter-jwt>" -H "Content-Type: application/json" -d '{"session_id":1}'
+# curl http://127.0.0.1:8007/billing/1 -H "Authorization: Bearer <admin-or-waiter-jwt>"
+# curl -X PUT http://127.0.0.1:8007/billing/1/paid -H "Authorization: Bearer <admin-or-waiter-jwt>"
+
+### Feedback: customer submits feedback after bill payment (no JWT required)
+POST http://127.0.0.1:8007/feedback
+Content-Type: application/json
+
+{"session_id": 1, "rating": 5, "comment": "Excellent food and quick service."}
+
+# HTTP/1.1 201 Created
+# {"id":1,"session_id":1,"rating":5,"comment":"Excellent food and quick service."}
+
+### Feedback: list newest feedback (admin only)
+@feedbackAdminToken = <paste-admin-jwt-here>
+GET http://127.0.0.1:8007/feedback?page=1&page_size=20&rating=5
+Authorization: Bearer {{feedbackAdminToken}}
+
+# HTTP/1.1 200 OK
+# {"items":[{"id":1,"session_id":1,"customer_name":"John Doe","customer_email":"john.doe@example.com","table_number":8,"rating":5,"comment":"Excellent food and quick service.","submitted_at":"2026-08-05T12:15:00"}],"page":1,"page_size":20,"total_items":1,"total_pages":1}
+
+### Feedback: get one feedback (admin only)
+GET http://127.0.0.1:8007/feedback/1
+Authorization: Bearer {{feedbackAdminToken}}
+
+# HTTP/1.1 200 OK
+# {"id":1,"session_id":1,"customer_name":"John Doe","customer_email":"john.doe@example.com","table_number":8,"rating":5,"comment":"Excellent food and quick service.","submitted_at":"2026-08-05T12:15:00"}
+
+### Feedback: delete feedback (admin only)
+DELETE http://127.0.0.1:8007/feedback/1
+Authorization: Bearer {{feedbackAdminToken}}
+
+# HTTP/1.1 200 OK
+# {"message":"Feedback deleted successfully."}
+
+### Feedback cURL examples
+# curl -X POST http://127.0.0.1:8007/feedback -H "Content-Type: application/json" -d '{"session_id":1,"rating":5,"comment":"Excellent food and quick service."}'
+# curl "http://127.0.0.1:8007/feedback?page=1&page_size=20&rating=5" -H "Authorization: Bearer <admin-jwt>"
+# curl http://127.0.0.1:8007/feedback/1 -H "Authorization: Bearer <admin-jwt>"
+# curl -X DELETE http://127.0.0.1:8007/feedback/1 -H "Authorization: Bearer <admin-jwt>"
+
+### Reports and charts (all endpoints require an admin JWT)
+@reportAdminToken = <paste-admin-jwt-here>
+
+### Daily report
+GET http://127.0.0.1:8007/admin/reports/daily?date=2026-08-05
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"date":"2026-08-05","orders":45,"revenue":21540.5,"bills_generated":43,"bills_paid":41,"active_sessions":6,"completed_sessions":39,"average_order_value":525.38,"most_ordered_item":"Chicken Biryani","top_category":"Main Course","feedback_count":31,"average_rating":4.8}
+
+### Monthly report
+GET http://127.0.0.1:8007/admin/reports/monthly?year=2026&month=8
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"month":"August","year":2026,"total_orders":853,"completed_orders":835,"revenue":428650.25,"bills_generated":842,"bills_paid":831,"average_order_value":515.82,"top_item":"Chicken Biryani","top_category":"Main Course","feedback_count":351,"average_rating":4.7}
+
+### Yearly report
+GET http://127.0.0.1:8007/admin/reports/yearly?year=2026
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"year":2026,"total_revenue":4587500,"total_orders":8654,"average_rating":4.6,"monthly_sales":[{"month":"January","revenue":250000,"orders":512}]}
+
+### Date-range report
+GET http://127.0.0.1:8007/admin/reports?from=2026-08-01&to=2026-08-31
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"from_date":"2026-08-01","to_date":"2026-08-31","orders":853,"revenue":428650.25,"paid_bills":831,"average_rating":4.7,"most_ordered_item":"Chicken Biryani","top_category":"Main Course","average_order_value":515.82,"customer_sessions":842}
+
+### Generate monthly PDF report
+GET http://127.0.0.1:8007/admin/reports/monthly/pdf?year=2026&month=8
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"pdf_path":"uploads/reports/August_2026_Report.pdf"}
+
+### Generate monthly Excel report
+GET http://127.0.0.1:8007/admin/reports/monthly/excel?year=2026&month=8
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"excel_path":"uploads/reports/August_2026_Report.xlsx"}
+
+### Revenue chart data
+GET http://127.0.0.1:8007/admin/charts/revenue?year=2026
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"labels":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"values":[250000,275000,301000,287000,315000,330000,365000,428000,0,0,0,0]}
+
+### Top-items chart data
+GET http://127.0.0.1:8007/admin/charts/top-items?year=2026
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"labels":["Chicken Biryani","Burger"],"values":[541,436]}
+
+### Top-categories chart data
+GET http://127.0.0.1:8007/admin/charts/top-categories?year=2026
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"labels":["Main Course","Fast Food"],"values":[1250,850]}
+
+### Order-status chart data
+GET http://127.0.0.1:8007/admin/charts/order-status?year=2026
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"labels":["Order Received","Preparing","Ready To Serve","Served"],"values":[2,3,1,524]}
+
+### Ratings chart data
+GET http://127.0.0.1:8007/admin/charts/ratings?year=2026
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"labels":["1 Star","2 Star","3 Star","4 Star","5 Star"],"values":[2,5,18,65,240]}
+
+### Reports cURL examples
+# curl "http://127.0.0.1:8007/admin/reports/daily?date=2026-08-05" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/reports/monthly?year=2026&month=8" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/reports/yearly?year=2026" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/reports?from=2026-08-01&to=2026-08-31" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/reports/monthly/pdf?year=2026&month=8" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/reports/monthly/excel?year=2026&month=8" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/charts/revenue?year=2026" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/charts/top-items?year=2026" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/charts/top-categories?year=2026" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/charts/order-status?year=2026" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/charts/ratings?year=2026" -H "Authorization: Bearer <admin-jwt>"
+
+
+### Request OTP
+POST http://127.0.0.1:8007/auth/request-otp
+Content-Type: application/json
+
+{"email": "adm.in@gmail.com"}
+
+### Verify OTP
+POST http://127.0.0.1:8007/auth/verify-otp
+Content-Type: application/json
+
+{"email": "adm.in@gmail.com", "otp": "123456"}
+
+### Get current user
+GET http://127.0.0.1:8007/auth/me
+Authorization: Bearer <token>
+
+### Create staff
+POST http://127.0.0.1:8007/admin/users
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{"name": "Kitchen Staff", "email": "kitchen.staff@example.com", "role": "kitchen"}
+
+### List staff
+GET http://127.0.0.1:8007/admin/users?page=1&page_size=20&role=admin
+Authorization: Bearer <token>
+
+### Get staff by id
+GET http://127.0.0.1:8007/admin/users/2
+Authorization: Bearer <token>
+
+### Update staff
+PUT http://127.0.0.1:8007/admin/users/2
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{"name": "Updated Kitchen", "role": "kitchen"}
+
+### Delete staff
+DELETE http://127.0.0.1:8007/admin/users/2
+Authorization: Bearer <token>
+
+### Create customer session
+POST http://127.0.0.1:8007/customer/session
+Content-Type: application/json
+
+{"name": "John Doe", "email": "john.doe@example.com", "number_of_people": 4, "table_number": 8}
+
+### Get customer session by id
+GET http://127.0.0.1:8007/customer/session/1
+
+### Update customer session by id
+PUT http://127.0.0.1:8007/customer/session/1
+Content-Type: application/json
+
+{"name": "John Doe", "email": "john.doe@example.com", "number_of_people": 5, "table_number": 8}
+
+### Create waiter call (customer authentication is not required)
+POST http://127.0.0.1:8007/customer/waiter-call
+Content-Type: application/json
+
+{"session_id": 1}
+
+# HTTP/1.1 201 Created
+# {
+#   "id": 1,
+#   "session_id": 1,
+#   "status": "OPEN",
+#   "created_at": "2026-08-04T12:00:00"
+# }
+
+### Get waiter call by id (customer authentication is not required)
+GET http://127.0.0.1:8007/customer/waiter-call/1
+
+# HTTP/1.1 200 OK
+# {
+#   "id": 1,
+#   "session_id": 1,
+#   "status": "OPEN",
+#   "created_at": "2026-08-04T12:00:00"
+# }
+
+### Create category (admin only)
+POST http://127.0.0.1:8007/categories
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{"name": "Starters", "description": "Appetizers and small plates"}
+
+### List categories (public)
+GET http://127.0.0.1:8007/categories?page=1&page_size=20
+
+### Search categories (public)
+GET http://127.0.0.1:8007/categories?page=1&page_size=20&search=starter
+
+### Get category by id (public)
+GET http://127.0.0.1:8007/categories/1
+
+### Update category (admin only)
+PUT http://127.0.0.1:8007/categories/1
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{"name": "Updated Starters", "description": "Updated appetizer selection"}
+
+### Delete category (admin only)
+DELETE http://127.0.0.1:8007/categories/1
+Authorization: Bearer <token>
+
+### Create menu item (admin only; category_id must exist)
+POST http://127.0.0.1:8007/menu
+Authorization: Bearer <token>
+Content-Type: multipart/form-data; boundary=MenuBoundary
+
+--MenuBoundary
+Content-Disposition: form-data; name="category_id"
+
+1
+--MenuBoundary
+Content-Disposition: form-data; name="name"
+
+Paneer Tikka
+--MenuBoundary
+Content-Disposition: form-data; name="description"
+
+Grilled cottage cheese with spices
+--MenuBoundary
+Content-Disposition: form-data; name="price"
+
+249.00
+--MenuBoundary
+Content-Disposition: form-data; name="calories"
+
+320
+--MenuBoundary
+Content-Disposition: form-data; name="cook_time"
+
+20
+--MenuBoundary
+Content-Disposition: form-data; name="availability"
+
+true
+--MenuBoundary
+Content-Disposition: form-data; name="chef_special"
+
+true
+--MenuBoundary
+Content-Disposition: form-data; name="best_seller"
+
+false
+--MenuBoundary--
+
+### List available menu items (public)
+GET http://127.0.0.1:8007/menu?page=1&page_size=20&sort_by=name&sort_dir=asc
+
+### Filter menu items by category and chef special (public)
+GET http://127.0.0.1:8007/menu?page=1&page_size=20&category_id=1&chef_special=true
+
+### Search menu items by name (public)
+GET http://127.0.0.1:8007/menu/search?query=paneer
+
+### Get menu item by id (public)
+GET http://127.0.0.1:8007/menu/1
+
+### Get available menu items by category (public)
+GET http://127.0.0.1:8007/menu/category/1
+
+### Update menu item (admin only)
+PUT http://127.0.0.1:8007/menu/1
+Authorization: Bearer <token>
+Content-Type: multipart/form-data; boundary=MenuBoundary
+
+--MenuBoundary
+Content-Disposition: form-data; name="price"
+
+269.00
+--MenuBoundary
+Content-Disposition: form-data; name="best_seller"
+
+true
+--MenuBoundary--
+
+### Delete menu item (admin only)
+DELETE http://127.0.0.1:8007/menu/1
+Authorization: Bearer <token>
+
+### cURL examples
+# curl -X POST http://127.0.0.1:8007/customer/session -H "Content-Type: application/json" -d '{"name":"John Doe","email":"john.doe@example.com","number_of_people":4,"table_number":8}'
+# curl -X GET http://127.0.0.1:8007/customer/session/1
+# curl -X PUT http://127.0.0.1:8007/customer/session/1 -H "Content-Type: application/json" -d '{"number_of_people":5}'
+# curl -X POST http://127.0.0.1:8007/customer/waiter-call -H "Content-Type: application/json" -d '{"session_id":1}'
+# curl http://127.0.0.1:8007/customer/waiter-call/1
+
+### Kitchen JWT obtained by authenticating a user whose role is kitchen
+@kitchenToken = <paste-kitchen-jwt-here>
+
+### List ORDER_RECEIVED and PREPARING orders (kitchen only)
+GET http://127.0.0.1:8007/kitchen/orders
+Authorization: Bearer {{kitchenToken}}
+
+### Move an ORDER_RECEIVED order to PREPARING (kitchen only)
+PUT http://127.0.0.1:8007/kitchen/orders/1/preparing
+Authorization: Bearer {{kitchenToken}}
+
+### Move a PREPARING order to READY_TO_SERVE and create a waiter notification
+PUT http://127.0.0.1:8007/kitchen/orders/1/ready
+Authorization: Bearer {{kitchenToken}}
+
+### Kitchen cURL examples
+# curl http://127.0.0.1:8007/kitchen/orders -H "Authorization: Bearer <kitchen-jwt>"
+# curl -X PUT http://127.0.0.1:8007/kitchen/orders/1/preparing -H "Authorization: Bearer <kitchen-jwt>"
+# curl -X PUT http://127.0.0.1:8007/kitchen/orders/1/ready -H "Authorization: Bearer <kitchen-jwt>"
+
+### Waiter JWT obtained by authenticating a user whose role is waiter
+@waiterToken = <paste-waiter-jwt-here>
+
+### List unread READY_TO_SERVE order notifications (waiter only)
+GET http://127.0.0.1:8007/waiter/orders
+Authorization: Bearer {{waiterToken}}
+
+# HTTP/1.1 200 OK
+# [{"notification_id":1,"order_id":1,"table_number":8,"customer_name":"John Doe","order_status":"READY_TO_SERVE","ordered_items":[{"menu_item_name":"Paneer Tikka","quantity":2,"special_instruction":"Less spicy"}],"subtotal":"498.00","tax":"24.90","total":"522.90","estimated_cooking_time":20,"created_at":"2026-08-04T12:00:00"}]
+
+### List OPEN waiter calls (waiter only)
+GET http://127.0.0.1:8007/waiter/calls
+Authorization: Bearer {{waiterToken}}
+
+# HTTP/1.1 200 OK
+# [{"call_id":1,"session_id":1,"table_number":8,"customer_name":"John Doe","customer_email":"john.doe@example.com","number_of_people":4,"status":"OPEN","created_at":"2026-08-04T12:05:00"}]
+
+### Mark a READY_TO_SERVE order as SERVED (waiter only)
+PUT http://127.0.0.1:8007/waiter/orders/1/served
+Authorization: Bearer {{waiterToken}}
+
+# HTTP/1.1 200 OK
+# {"order_id":1,"session_id":1,"table_number":8,"customer_name":"John Doe","order_status":"SERVED","ordered_items":[{"menu_item_name":"Paneer Tikka","quantity":2,"special_instruction":"Less spicy"}],"subtotal":"498.00","tax":"24.90","total":"522.90","estimated_cooking_time":20,"created_at":"2026-08-04T12:00:00"}
+
+### Complete an OPEN waiter call (waiter only)
+PUT http://127.0.0.1:8007/waiter/calls/1/completed
+Authorization: Bearer {{waiterToken}}
+
+# HTTP/1.1 200 OK
+# {"call_id":1,"session_id":1,"table_number":8,"customer_name":"John Doe","customer_email":"john.doe@example.com","number_of_people":4,"status":"COMPLETED","created_at":"2026-08-04T12:05:00"}
+
+### Waiter cURL examples
+# curl http://127.0.0.1:8007/waiter/orders -H "Authorization: Bearer <waiter-jwt>"
+# curl http://127.0.0.1:8007/waiter/calls -H "Authorization: Bearer <waiter-jwt>"
+# curl -X PUT http://127.0.0.1:8007/waiter/orders/1/served -H "Authorization: Bearer <waiter-jwt>"
+# curl -X PUT http://127.0.0.1:8007/waiter/calls/1/completed -H "Authorization: Bearer <waiter-jwt>"
+
+### Billing token: use an admin or waiter JWT
+@billingToken = <paste-admin-or-waiter-jwt-here>
+
+### Generate a bill and email its PDF invoice (admin or waiter only)
+POST http://127.0.0.1:8007/billing/request
+Authorization: Bearer {{billingToken}}
+Content-Type: application/json
+
+{"session_id": 1}
+
+# HTTP/1.1 201 Created
+# {"bill_id":1,"session_id":1,"customer_name":"John Doe","customer_email":"john.doe@example.com","table_number":8,"ordered_items":[{"order_id":1,"menu_item_name":"Paneer Tikka","quantity":2,"unit_price":"249.00","item_total":"498.00"}],"subtotal":"522.90","cgst":"13.07","sgst":"13.07","total_tax":"26.14","grand_total":"549.04","pdf_path":"uploads/invoices/invoice_1.pdf","is_paid":false,"created_at":"2026-08-04T12:10:00"}
+
+### Get a generated bill by customer session id
+GET http://127.0.0.1:8007/billing/1
+Authorization: Bearer {{billingToken}}
+
+# HTTP/1.1 200 OK
+# {"bill_id":1,"session_id":1,"customer_name":"John Doe","customer_email":"john.doe@example.com","table_number":8,"ordered_items":[{"order_id":1,"menu_item_name":"Paneer Tikka","quantity":2,"unit_price":"249.00","item_total":"498.00"}],"subtotal":"522.90","cgst":"13.07","sgst":"13.07","total_tax":"26.14","grand_total":"549.04","pdf_path":"uploads/invoices/invoice_1.pdf","is_paid":false,"created_at":"2026-08-04T12:10:00"}
+
+### Mark a bill as paid and complete its customer session (admin or waiter only)
+PUT http://127.0.0.1:8007/billing/1/paid
+Authorization: Bearer {{billingToken}}
+
+# HTTP/1.1 200 OK
+# {"bill_id":1,"session_id":1,"customer_name":"John Doe","customer_email":"john.doe@example.com","table_number":8,"ordered_items":[{"order_id":1,"menu_item_name":"Paneer Tikka","quantity":2,"unit_price":"249.00","item_total":"498.00"}],"subtotal":"522.90","cgst":"13.07","sgst":"13.07","total_tax":"26.14","grand_total":"549.04","pdf_path":"uploads/invoices/invoice_1.pdf","is_paid":true,"created_at":"2026-08-04T12:10:00"}
+
+### Billing cURL examples
+# curl -X POST http://127.0.0.1:8007/billing/request -H "Authorization: Bearer <admin-or-waiter-jwt>" -H "Content-Type: application/json" -d '{"session_id":1}'
+# curl http://127.0.0.1:8007/billing/1 -H "Authorization: Bearer <admin-or-waiter-jwt>"
+# curl -X PUT http://127.0.0.1:8007/billing/1/paid -H "Authorization: Bearer <admin-or-waiter-jwt>"
+
+### Feedback: customer submits feedback after bill payment (no JWT required)
+POST http://127.0.0.1:8007/feedback
+Content-Type: application/json
+
+{"session_id": 1, "rating": 5, "comment": "Excellent food and quick service."}
+
+# HTTP/1.1 201 Created
+# {"id":1,"session_id":1,"rating":5,"comment":"Excellent food and quick service."}
+
+### Feedback: list newest feedback (admin only)
+@feedbackAdminToken = <paste-admin-jwt-here>
+GET http://127.0.0.1:8007/feedback?page=1&page_size=20&rating=5
+Authorization: Bearer {{feedbackAdminToken}}
+
+# HTTP/1.1 200 OK
+# {"items":[{"id":1,"session_id":1,"customer_name":"John Doe","customer_email":"john.doe@example.com","table_number":8,"rating":5,"comment":"Excellent food and quick service.","submitted_at":"2026-08-05T12:15:00"}],"page":1,"page_size":20,"total_items":1,"total_pages":1}
+
+### Feedback: get one feedback (admin only)
+GET http://127.0.0.1:8007/feedback/1
+Authorization: Bearer {{feedbackAdminToken}}
+
+# HTTP/1.1 200 OK
+# {"id":1,"session_id":1,"customer_name":"John Doe","customer_email":"john.doe@example.com","table_number":8,"rating":5,"comment":"Excellent food and quick service.","submitted_at":"2026-08-05T12:15:00"}
+
+### Feedback: delete feedback (admin only)
+DELETE http://127.0.0.1:8007/feedback/1
+Authorization: Bearer {{feedbackAdminToken}}
+
+# HTTP/1.1 200 OK
+# {"message":"Feedback deleted successfully."}
+
+### Feedback cURL examples
+# curl -X POST http://127.0.0.1:8007/feedback -H "Content-Type: application/json" -d '{"session_id":1,"rating":5,"comment":"Excellent food and quick service."}'
+# curl "http://127.0.0.1:8007/feedback?page=1&page_size=20&rating=5" -H "Authorization: Bearer <admin-jwt>"
+# curl http://127.0.0.1:8007/feedback/1 -H "Authorization: Bearer <admin-jwt>"
+# curl -X DELETE http://127.0.0.1:8007/feedback/1 -H "Authorization: Bearer <admin-jwt>"
+
+### Reports and charts (all endpoints require an admin JWT)
+@reportAdminToken = <paste-admin-jwt-here>
+
+### Daily report
+GET http://127.0.0.1:8007/admin/reports/daily?date=2026-08-05
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"date":"2026-08-05","orders":45,"revenue":21540.5,"bills_generated":43,"bills_paid":41,"active_sessions":6,"completed_sessions":39,"average_order_value":525.38,"most_ordered_item":"Chicken Biryani","top_category":"Main Course","feedback_count":31,"average_rating":4.8}
+
+### Monthly report
+GET http://127.0.0.1:8007/admin/reports/monthly?year=2026&month=8
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"month":"August","year":2026,"total_orders":853,"completed_orders":835,"revenue":428650.25,"bills_generated":842,"bills_paid":831,"average_order_value":515.82,"top_item":"Chicken Biryani","top_category":"Main Course","feedback_count":351,"average_rating":4.7}
+
+### Yearly report
+GET http://127.0.0.1:8007/admin/reports/yearly?year=2026
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"year":2026,"total_revenue":4587500,"total_orders":8654,"average_rating":4.6,"monthly_sales":[{"month":"January","revenue":250000,"orders":512}]}
+
+### Date-range report
+GET http://127.0.0.1:8007/admin/reports?from=2026-08-01&to=2026-08-31
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"from_date":"2026-08-01","to_date":"2026-08-31","orders":853,"revenue":428650.25,"paid_bills":831,"average_rating":4.7,"most_ordered_item":"Chicken Biryani","top_category":"Main Course","average_order_value":515.82,"customer_sessions":842}
+
+### Generate monthly PDF report
+GET http://127.0.0.1:8007/admin/reports/monthly/pdf?year=2026&month=8
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"pdf_path":"uploads/reports/August_2026_Report.pdf"}
+
+### Generate monthly Excel report
+GET http://127.0.0.1:8007/admin/reports/monthly/excel?year=2026&month=8
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"excel_path":"uploads/reports/August_2026_Report.xlsx"}
+
+### Revenue chart data
+GET http://127.0.0.1:8007/admin/charts/revenue?year=2026
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"labels":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"values":[250000,275000,301000,287000,315000,330000,365000,428000,0,0,0,0]}
+
+### Top-items chart data
+GET http://127.0.0.1:8007/admin/charts/top-items?year=2026
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"labels":["Chicken Biryani","Burger"],"values":[541,436]}
+
+### Top-categories chart data
+GET http://127.0.0.1:8007/admin/charts/top-categories?year=2026
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"labels":["Main Course","Fast Food"],"values":[1250,850]}
+
+### Order-status chart data
+GET http://127.0.0.1:8007/admin/charts/order-status?year=2026
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"labels":["Order Received","Preparing","Ready To Serve","Served"],"values":[2,3,1,524]}
+
+### Ratings chart data
+GET http://127.0.0.1:8007/admin/charts/ratings?year=2026
+Authorization: Bearer {{reportAdminToken}}
+
+# 200 {"labels":["1 Star","2 Star","3 Star","4 Star","5 Star"],"values":[2,5,18,65,240]}
+
+### Reports cURL examples
+# curl "http://127.0.0.1:8007/admin/reports/daily?date=2026-08-05" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/reports/monthly?year=2026&month=8" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/reports/yearly?year=2026" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/reports?from=2026-08-01&to=2026-08-31" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/reports/monthly/pdf?year=2026&month=8" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/reports/monthly/excel?year=2026&month=8" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/charts/revenue?year=2026" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/charts/top-items?year=2026" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/charts/top-categories?year=2026" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/charts/order-status?year=2026" -H "Authorization: Bearer <admin-jwt>"
+# curl "http://127.0.0.1:8007/admin/charts/ratings?year=2026" -H "Authorization: Bearer <admin-jwt>"
+
+
+#orders
+#@baseUrl = http://127.0.0.1:8007
+@sessionId = 1
+@orderId = 1
+
+### Create an order (requires an ACTIVE customer session and available menu items)
+POST {{baseUrl}}/orders
+Content-Type: application/json
+
+{
+  "session_id": {{sessionId}},
+  "items": [
+    {
+      "menu_item_id": 1,
+      "quantity": 2,
+      "special_instruction": "Less spicy"
+    },
+    {
+      "menu_item_id": 2,
+      "quantity": 1
+    }
+  ]
+}
+
+### Get an order by id
+GET {{baseUrl}}/orders/{{orderId}}
+
+### Get all orders for a customer session (newest first)
+GET {{baseUrl}}/orders/session/{{sessionId}}
+
+### Delete an order (only works while status is ORDER_RECEIVED)
+DELETE {{baseUrl}}/orders/{{orderId}}
+
+### cURL examples
+# curl -X POST http://127.0.0.1:8007/orders -H "Content-Type: application/json" -d "{\"session_id\":1,\"items\":[{\"menu_item_id\":1,\"quantity\":2,\"special_instruction\":\"Less spicy\"},{\"menu_item_id\":2,\"quantity\":1}]}"
+# curl http://127.0.0.1:8007/orders/1
+# curl http://127.0.0.1:8007/orders/session/1
+# curl -X DELETE http://127.0.0.1:8007/orders/1
+

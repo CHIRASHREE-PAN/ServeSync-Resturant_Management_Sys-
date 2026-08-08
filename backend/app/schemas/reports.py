@@ -67,4 +67,8 @@ class FileReportResponse(BaseModel):
 
 class ChartResponse(BaseModel):
     labels: list[str]
+<<<<<<< HEAD:backend/app/schemas/reports.py
     values: list[float | int]
+=======
+    values: list[float | int]
+>>>>>>> 463124af02341a26f11446ceb35802d78cace07e:app/schemas/reports.py

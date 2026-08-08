@@ -139,4 +139,8 @@ def initialize_database() -> None:
     ensure_customer_session_schema()
     ensure_order_schema()
     ensure_feedback_schema()
+<<<<<<< HEAD:backend/app/database.py
     print("Database tables ensured successfully.")
+=======
+    print("Database tables ensured successfully.")
+>>>>>>> 463124af02341a26f11446ceb35802d78cace07e:app/database.py

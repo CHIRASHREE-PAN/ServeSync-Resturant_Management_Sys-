@@ -141,4 +141,8 @@ class ReportsService:
     @staticmethod
     def _database_error(operation: str, exc: Exception) -> HTTPException:
         logger.exception("reports.database_error operation=%s", operation)
+<<<<<<< HEAD:backend/app/services/reports_service.py
         return HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Unable to {operation} due to a database error.")
+=======
+        return HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Unable to {operation} due to a database error.")
+>>>>>>> 463124af02341a26f11446ceb35802d78cace07e:app/services/reports_service.py
