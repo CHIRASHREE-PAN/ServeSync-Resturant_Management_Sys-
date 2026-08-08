@@ -32,8 +32,4 @@ class OTPRepository:
     def delete_otp(self, otp_id: int) -> None:
         otp_record = self.db.get(OTP, otp_id)
         if otp_record:
-<<<<<<< HEAD:backend/app/repositories/otp_repository.py
             self.db.delete(otp_record)
-=======
-            self.db.delete(otp_record)
->>>>>>> 463124af02341a26f11446ceb35802d78cace07e:app/repositories/otp_repository.py

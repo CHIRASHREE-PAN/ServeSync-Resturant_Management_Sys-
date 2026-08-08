@@ -18,31 +18,70 @@ depends_on = None
 def upgrade() -> None:
     bind = op.get_bind()
     inspector = sa.inspect(bind)
+
     if "feedback" not in inspector.get_table_names():
         return
 
-    columns = {column["name"] for column in inspector.get_columns("feedback")}
+    columns = {
+        column["name"]
+        for column in inspector.get_columns("feedback")
+    }
+
     if "created_at" not in columns:
         op.add_column(
             "feedback",
-            sa.Column("created_at", sa.DateTime(), nullable=False, server_default=sa.text("CURRENT_TIMESTAMP")),
+            sa.Column(
+                "created_at",
+                sa.DateTime(),
+                nullable=False,
+                server_default=sa.text("CURRENT_TIMESTAMP"),
+            ),
         )
 
-    unique_constraints = {constraint["name"] for constraint in inspector.get_unique_constraints("feedback")}
-    indexes = {index["name"] for index in inspector.get_indexes("feedback")}
-    if "uq_feedback_session_id" not in unique_constraints and "uq_feedback_session_id" not in indexes:
-        op.create_unique_constraint("uq_feedback_session_id", "feedback", ["session_id"])
+    unique_constraints = {
+        constraint["name"]
+        for constraint in inspector.get_unique_constraints("feedback")
+    }
+
+    indexes = {
+        index["name"]
+        for index in inspector.get_indexes("feedback")
+    }
+
+    if (
+        "uq_feedback_session_id" not in unique_constraints
+        and "uq_feedback_session_id" not in indexes
+    ):
+        op.create_unique_constraint(
+            "uq_feedback_session_id",
+            "feedback",
+            ["session_id"],
+        )
 
 
 def downgrade() -> None:
     bind = op.get_bind()
     inspector = sa.inspect(bind)
+
     if "feedback" not in inspector.get_table_names():
         return
 
-    unique_constraints = {constraint["name"] for constraint in inspector.get_unique_constraints("feedback")}
+    unique_constraints = {
+        constraint["name"]
+        for constraint in inspector.get_unique_constraints("feedback")
+    }
+
     if "uq_feedback_session_id" in unique_constraints:
-        op.drop_constraint("uq_feedback_session_id", "feedback", type_="unique")
-    columns = {column["name"] for column in inspector.get_columns("feedback")}
+        op.drop_constraint(
+            "uq_feedback_session_id",
+            "feedback",
+            type_="unique",
+        )
+
+    columns = {
+        column["name"]
+        for column in inspector.get_columns("feedback")
+    }
+
     if "created_at" in columns:
         op.drop_column("feedback", "created_at")

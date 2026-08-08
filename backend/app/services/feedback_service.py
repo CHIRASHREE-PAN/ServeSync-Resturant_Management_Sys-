@@ -133,8 +133,4 @@ class FeedbackService:
             rating=feedback.rating,
             comment=feedback.comment,
             submitted_at=feedback.created_at,
-<<<<<<< HEAD:backend/app/services/feedback_service.py
         )
-=======
-        )
->>>>>>> 463124af02341a26f11446ceb35802d78cace07e:app/services/feedback_service.py

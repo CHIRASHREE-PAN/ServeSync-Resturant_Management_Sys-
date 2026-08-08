@@ -114,8 +114,4 @@ class ReportsRepository:
             .where(Feedback.created_at >= datetime.combine(start, time.min), Feedback.created_at < datetime.combine(end, time.min))
             .group_by(Feedback.rating)
         ).all()
-<<<<<<< HEAD:backend/app/repositories/reports_repository.py
         return {int(row[0]): int(row[1]) for row in rows}
-=======
-        return {int(row[0]): int(row[1]) for row in rows}
->>>>>>> 463124af02341a26f11446ceb35802d78cace07e:app/repositories/reports_repository.py

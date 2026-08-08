@@ -506,8 +506,4 @@ curl "http://127.0.0.1:8007/admin/charts/revenue?year=2026" \
 - `401`: JWT is missing or invalid.
 - `403`: authenticated user is not an admin.
 - `422`: malformed, future, out-of-range, or inverted date input.
-<<<<<<< HEAD:backend/docs/api-reference.md
 - `500`: database, PDF, Excel, or unexpected internal failure. Server logs include the affected report endpoint and parameters.
-=======
-- `500`: database, PDF, Excel, or unexpected internal failure. Server logs include the affected report endpoint and parameters.
->>>>>>> 463124af02341a26f11446ceb35802d78cace07e:docs/api-reference.md

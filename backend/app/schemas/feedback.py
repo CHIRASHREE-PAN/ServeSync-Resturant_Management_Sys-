@@ -26,8 +26,4 @@ class FeedbackDetailResponse(BaseModel):
     table_number: int
     rating: int
     comment: str | None
-<<<<<<< HEAD:backend/app/schemas/feedback.py
     submitted_at: datetime
-=======
-    submitted_at: datetime
->>>>>>> 463124af02341a26f11446ceb35802d78cace07e:app/schemas/feedback.py

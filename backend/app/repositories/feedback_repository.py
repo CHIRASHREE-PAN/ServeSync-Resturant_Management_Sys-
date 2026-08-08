@@ -56,8 +56,4 @@ class FeedbackRepository:
 
     def delete(self, feedback: Feedback) -> None:
         self.db.delete(feedback)
-<<<<<<< HEAD:backend/app/repositories/feedback_repository.py
         self.db.commit()
-=======
-        self.db.commit()
->>>>>>> 463124af02341a26f11446ceb35802d78cace07e:app/repositories/feedback_repository.py

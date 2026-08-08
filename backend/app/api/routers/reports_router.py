@@ -107,8 +107,4 @@ def order_status_chart(year: int = Query(default_factory=lambda: date.today().ye
 @router.get("/charts/ratings", response_model=ChartResponse, summary="Get ratings chart data", description="Admin-only 1–5 star feedback distribution for the requested year.", responses=ERROR_RESPONSES)
 def ratings_chart(year: int = Query(default_factory=lambda: date.today().year), db: Session = Depends(get_db), _: object = Depends(require_admin)) -> ChartResponse:
     year = _validate_year(year); logger.info("charts.ratings year=%s", year)
-<<<<<<< HEAD:backend/app/api/routers/reports_router.py
     return ChartResponse(**_service(db).chart_ratings(year))
-=======
-    return ChartResponse(**_service(db).chart_ratings(year))
->>>>>>> 463124af02341a26f11446ceb35802d78cace07e:app/api/routers/reports_router.py

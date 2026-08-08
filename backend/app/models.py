@@ -1,6 +1,5 @@
 from datetime import datetime
 
-<<<<<<< HEAD:backend/app/models.py
 from sqlalchemy import (
     Boolean,
     DateTime,
@@ -13,9 +12,6 @@ from sqlalchemy import (
     func,
 )
 
-=======
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, Numeric, UniqueConstraint
->>>>>>> 463124af02341a26f11446ceb35802d78cace07e:app/models.py
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -193,10 +189,6 @@ class Feedback(Base):
     session_id: Mapped[int] = mapped_column(ForeignKey("customer_sessions.id"), nullable=False)
     rating: Mapped[int] = mapped_column(Integer, nullable=False)
     comment: Mapped[str | None] = mapped_column(Text, nullable=True)
-<<<<<<< HEAD:backend/app/models.py
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
-=======
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
->>>>>>> 463124af02341a26f11446ceb35802d78cace07e:app/models.py
 
     session: Mapped[CustomerSession] = relationship(back_populates="feedback")
