@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-background: #fff8f0;
+  --color-card: #ffffff;
+  --color-primary: #c65d3b;
+  --color-primary-hover: #a84a2d;
+  --color-accent: #e8a317;
+  --color-secondary: #6b8e23;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+  --color-text: #3e2723;
+  --color-secondary-text: #6b7280;
+  --color-border: #eadfd3;
+  --color-divider: #f1ece6;
+  --color-muted: #faf6f1;
+  --color-sidebar: #fffdfb;
+}
+
+/* =========================
+   GLOBAL
+========================= */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--color-background);
+  color: var(--color-text);
+
+  /* Main body font */
+  font-family: "DM Sans", sans-serif;
+
+  @apply antialiased;
+}
+
+/* =========================
+   HEADINGS
+========================= */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Playfair Display", serif;
+  color: var(--color-text);
+}
+
+/* =========================
+   ROOT
+========================= */
+
+#root {
+  min-height: 100vh;
+}
+
+/* =========================
+   TEXT SELECTION
+========================= */
+
+::selection {
+  background: rgba(198, 93, 59, 0.2);
+}
+
+/* =========================
+   BASE
+========================= */
+
+@layer base {
+  * {
+    @apply box-border;
+  }
+
+  body {
+    @apply antialiased;
+  }
+}
