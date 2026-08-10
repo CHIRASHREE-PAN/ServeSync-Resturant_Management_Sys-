@@ -6,6 +6,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.staticfiles import StaticFiles
 
 from app.api.routers.admin_router import router as admin_router
 from app.api.routers.auth_router import router as auth_router
@@ -139,6 +140,13 @@ app.include_router(category_router)
 app.include_router(menu_router)
 app.include_router(order_router)
 app.include_router(kitchen_router)
+
+
+# ---------------------------------------------------------
+# Static files (for uploaded images)
+# ---------------------------------------------------------
+
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 
 # ---------------------------------------------------------

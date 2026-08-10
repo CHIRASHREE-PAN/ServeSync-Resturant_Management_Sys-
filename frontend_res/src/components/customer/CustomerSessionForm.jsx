@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Users } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import {
+  ChefHat,
+  Clock3,
+  Mail,
+  Sparkles,
+  Table2,
+  User as UserIcon,
+  Users,
+} from "lucide-react";
 
 import {
   createCustomerSession,
@@ -17,6 +26,7 @@ import Input from "../ui/Input";
 function CustomerSessionForm() {
   const { session, saveSession, clearSession } =
     useCustomerSession();
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
@@ -32,17 +42,12 @@ function CustomerSessionForm() {
   /*
    * IMPORTANT:
    * Do not trust the session stored in localStorage.
-   *
    * Verify it with the backend every time this page loads.
    */
   useEffect(() => {
     let mounted = true;
 
     const validateStoredSession = async () => {
-      /*
-       * No stored session.
-       * Start with a completely empty customer form.
-       */
       if (!session?.id) {
         if (mounted) {
           setName("");
@@ -51,7 +56,6 @@ function CustomerSessionForm() {
           setTableNumber(1);
           setCheckingSession(false);
         }
-
         return;
       }
 
@@ -59,67 +63,37 @@ function CustomerSessionForm() {
         setCheckingSession(true);
         setError("");
 
-        /*
-         * Ask the backend for the real current session.
-         */
         const response = await getCustomerSession(
           session.id
         );
 
         const backendSession = response.data;
 
-        /*
-         * Only ACTIVE sessions are allowed to remain
-         * in localStorage/frontend state.
-         */
-        if (
-          backendSession?.status !== "ACTIVE"
-        ) {
+        if (backendSession?.status !== "ACTIVE") {
           clearSession();
-
           setName("");
           setEmail("");
           setNumberOfPeople(1);
           setTableNumber(1);
-
           return;
         }
 
-        /*
-         * Backend confirms that the session is ACTIVE.
-         * Save the latest backend version.
-         */
         saveSession(backendSession);
 
         setName(backendSession.name || "");
         setEmail(backendSession.email || "");
-
         setNumberOfPeople(
           backendSession.number_of_people || 1
         );
-
         setTableNumber(
           backendSession.table_number || 1
         );
       } catch (err) {
-        /*
-         * The session may have been completed/deleted
-         * in the database while old data still exists
-         * in localStorage.
-         *
-         * Clear the stale localStorage session.
-         */
         clearSession();
-
         setName("");
         setEmail("");
         setNumberOfPeople(1);
         setTableNumber(1);
-
-        /*
-         * Don't show a scary error for an old/stale session.
-         * Just start a fresh session.
-         */
         setError("");
       } finally {
         if (mounted) {
@@ -176,10 +150,6 @@ function CustomerSessionForm() {
 
       let response;
 
-      /*
-       * Only update if we have a session that has
-       * already been verified as ACTIVE.
-       */
       if (
         session?.id &&
         session?.status === "ACTIVE"
@@ -195,10 +165,6 @@ function CustomerSessionForm() {
           "Session updated successfully."
         );
       } else {
-        /*
-         * No valid ACTIVE session:
-         * create a completely new one.
-         */
         response = await createCustomerSession(
           payload
         );
@@ -208,6 +174,14 @@ function CustomerSessionForm() {
         setSuccess(
           "Session created successfully."
         );
+
+        /*
+         * Backend returned ACTIVE session and
+         * context now holds it. Navigate to the
+         * restaurant menu to begin ordering.
+         */
+        navigate("/menu");
+        return;
       }
     } catch (err) {
       setError(
@@ -219,10 +193,6 @@ function CustomerSessionForm() {
     }
   };
 
-  /*
-   * While checking an old localStorage session,
-   * don't show "Manage your dining session".
-   */
   if (checkingSession) {
     return (
       <motion.div
@@ -239,8 +209,7 @@ function CustomerSessionForm() {
     );
   }
 
-  const hasActiveSession =
-    session?.status === "ACTIVE";
+  const hasActiveSession = session?.status === "ACTIVE";
 
   return (
     <motion.div
@@ -248,34 +217,60 @@ function CustomerSessionForm() {
       animate={{ opacity: 1, y: 0 }}
       className="mx-auto max-w-3xl"
     >
-      <Card className="p-6">
-        <div>
-          <p className="text-sm font-medium text-primary">
-            Customer Session
-          </p>
-
-          <h2 className="mt-2 text-2xl font-semibold text-text">
-            {hasActiveSession
-              ? "Manage your dining session"
-              : "Start your dining session"}
-          </h2>
-
-          <p className="mt-2 text-sm text-secondary-text">
-            Enter your details to start ordering.
-          </p>
+      {/* Welcome / check-in intro */}
+      <div className="mb-8 text-center">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <ChefHat size={28} />
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="mt-6 space-y-4"
-        >
-          <div className="grid gap-4 md:grid-cols-2">
+        <p className="mt-4 text-sm font-semibold uppercase tracking-[0.3em] text-primary">
+          {hasActiveSession
+            ? "Your Table"
+            : "Welcome to ServeSync"}
+        </p>
+
+        <h2 className="mt-3 text-3xl font-semibold text-text sm:text-4xl">
+          {hasActiveSession
+            ? "Manage your table"
+            : "Let's get your table ready."}
+        </h2>
+
+        <p className="mx-auto mt-3 max-w-md text-secondary-text">
+          {hasActiveSession
+            ? "Update your visit details or head to the menu to keep ordering."
+            : "Tell us a little about your visit and we'll get everything ready."}
+        </p>
+      </div>
+
+      {/* Active session summary */}
+      {hasActiveSession && (
+        <Card className="mb-6 border-success/20 bg-success/5 p-5">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-success/10 text-success">
+              <Sparkles size={18} />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-text">
+                Active dining session
+              </p>
+              <p className="text-sm text-secondary-text">
+                Table {session.table_number} is ready for ordering.
+              </p>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      <Card className="p-6 sm:p-8">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="grid gap-5 md:grid-cols-2">
             {/* Guest name */}
             <div>
               <label
                 htmlFor="guest-name"
-                className="mb-2 block text-sm font-medium text-text"
+                className="mb-2 flex items-center gap-1.5 text-sm font-medium text-text"
               >
+                <UserIcon size={15} className="text-primary" />
                 Guest name
               </label>
 
@@ -293,8 +288,9 @@ function CustomerSessionForm() {
             <div>
               <label
                 htmlFor="guest-email"
-                className="mb-2 block text-sm font-medium text-text"
+                className="mb-2 flex items-center gap-1.5 text-sm font-medium text-text"
               >
+                <Mail size={15} className="text-primary" />
                 Email
               </label>
 
@@ -313,8 +309,9 @@ function CustomerSessionForm() {
             <div>
               <label
                 htmlFor="number-of-people"
-                className="mb-2 block text-sm font-medium text-text"
+                className="mb-2 flex items-center gap-1.5 text-sm font-medium text-text"
               >
+                <Users size={15} className="text-primary" />
                 Number of people
               </label>
 
@@ -324,9 +321,7 @@ function CustomerSessionForm() {
                 min="1"
                 value={numberOfPeople}
                 onChange={(event) =>
-                  setNumberOfPeople(
-                    event.target.value
-                  )
+                  setNumberOfPeople(event.target.value)
                 }
               />
             </div>
@@ -335,8 +330,9 @@ function CustomerSessionForm() {
             <div>
               <label
                 htmlFor="table-number"
-                className="mb-2 block text-sm font-medium text-text"
+                className="mb-2 flex items-center gap-1.5 text-sm font-medium text-text"
               >
+                <Table2 size={15} className="text-primary" />
                 Table number
               </label>
 
@@ -346,56 +342,54 @@ function CustomerSessionForm() {
                 min="1"
                 value={tableNumber}
                 onChange={(event) =>
-                  setTableNumber(
-                    event.target.value
-                  )
+                  setTableNumber(event.target.value)
                 }
               />
             </div>
           </div>
 
+          {/* Estimated time hint */}
+          <div className="rounded-table border border-border bg-muted p-3 text-xs text-secondary-text">
+            <span className="inline-flex items-center gap-1.5">
+              <Clock3 size={13} className="text-primary" />
+              Your table will be ready as soon as you submit.
+            </span>
+          </div>
+
           <Button
             type="submit"
             loading={loading}
-            className="w-full sm:w-auto"
+            className="h-12 w-full text-base sm:w-auto sm:min-w-44"
           >
             {hasActiveSession
               ? "Update session"
-              : "Start dining"}
+              : "Start Dining"}
           </Button>
 
           {error && (
-            <p className="text-sm text-error">
-              {error}
-            </p>
+            <p className="text-sm text-error">{error}</p>
           )}
 
           {success && (
-            <p className="text-sm text-success">
-              {success}
-            </p>
-          )}
-
-          {/* Active session information */}
-          {hasActiveSession && (
-            <div className="rounded-2xl border border-border bg-muted p-4">
-              <div className="flex items-center gap-2 text-sm font-semibold text-text">
-                <Users
-                  size={16}
-                  className="text-primary"
-                />
-
-                Active dining session
-              </div>
-
-              <p className="mt-2 text-sm text-secondary-text">
-                Table {session.table_number} is
-                ready for ordering.
-              </p>
-            </div>
+            <p className="text-sm text-success">{success}</p>
           )}
         </form>
       </Card>
+
+      {/* Shown only for active sessions — secondary action to menu */}
+      {hasActiveSession && (
+        <div className="mt-6 text-center">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => navigate("/menu")}
+            className="gap-2"
+          >
+            <Users size={16} />
+            Back to menu
+          </Button>
+        </div>
+      )}
     </motion.div>
   );
 }

@@ -24,6 +24,13 @@ export const listMenuItems = (params = {}) =>
   api.get('/menu', { params });
 
 export const createMenuItem = (payload) => {
+  // If payload is already FormData, use it directly
+  if (payload instanceof FormData) {
+    return api.post('/menu', payload, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  }
+  // Otherwise, convert object to FormData
   const formData = new FormData();
   Object.entries(payload).forEach(([key, value]) => {
     if (value !== undefined && value !== null) {
@@ -36,6 +43,13 @@ export const createMenuItem = (payload) => {
 };
 
 export const updateMenuItem = (id, payload) => {
+  // If payload is already FormData, use it directly
+  if (payload instanceof FormData) {
+    return api.put(`/menu/${id}`, payload, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  }
+  // Otherwise, convert object to FormData
   const formData = new FormData();
   Object.entries(payload).forEach(([key, value]) => {
     if (value !== undefined && value !== null) {

@@ -1,8 +1,11 @@
 import PropTypes from 'prop-types';
 
-function Card({ children, className = '', ...props }) {
+function Card({ children, className = '', interactive = false, ...props }) {
   return (
-    <div className={`rounded-[20px] border border-border bg-card p-5 shadow-soft ${className}`} {...props}>
+    <div
+      className={`surface-card p-6 ${interactive ? 'hover-lift cursor-pointer' : ''} ${className}`}
+      {...props}
+    >
       {children}
     </div>
   );
@@ -11,6 +14,7 @@ function Card({ children, className = '', ...props }) {
 Card.propTypes = {
   children: PropTypes.node,
   className: PropTypes.string,
+  interactive: PropTypes.bool,
 };
 
 export default Card;

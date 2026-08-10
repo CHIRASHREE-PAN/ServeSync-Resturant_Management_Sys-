@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload, selectinload
 
@@ -40,12 +42,15 @@ class BillingRepository:
         return self.db.execute(self._with_bill_details(statement)).scalar_one_or_none()
 
     def create_bill(self, *, session_id: int, subtotal, tax, total) -> Bill:
+        # Explicitly set created_at to avoid database schema mismatch
+        created_at = datetime.now(timezone.utc)
         bill = Bill(
             session_id=session_id,
             subtotal=subtotal,
             tax=tax,
             total=total,
             is_paid=False,
+            created_at=created_at,
         )
         self.db.add(bill)
         self.db.flush()

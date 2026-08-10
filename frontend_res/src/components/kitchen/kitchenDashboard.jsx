@@ -136,12 +136,12 @@ function KitchenDashboard() {
 
         {loading ? (
           <div className="space-y-3">
-            <Skeleton className="h-32 rounded-2xl" />
-            <Skeleton className="h-32 rounded-2xl" />
-            <Skeleton className="h-32 rounded-2xl" />
+            <Skeleton className="h-32 rounded-card" />
+            <Skeleton className="h-32 rounded-card" />
+            <Skeleton className="h-32 rounded-card" />
           </div>
         ) : orders.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border bg-muted p-8 text-center">
+          <div className="rounded-card border border-dashed border-border bg-muted p-8 text-center">
             <CheckCircle2
               size={32}
               className="mx-auto mb-3 text-success"
@@ -160,7 +160,7 @@ function KitchenDashboard() {
             {orders.map((order) => (
               <div
                 key={order.order_id}
-                className="rounded-2xl border border-border bg-muted p-4"
+                className="rounded-card border border-border bg-muted p-4"
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>

@@ -170,7 +170,7 @@ function AdminDashboard() {
                 key={index}
                 className="p-5"
               >
-                <Skeleton className="h-20 rounded-2xl" />
+                <Skeleton className="h-20 rounded-card" />
               </Card>
             ))
           : statCards.map(
@@ -231,7 +231,7 @@ function AdminDashboard() {
           </div>
 
           {loading ? (
-            <Skeleton className="h-44 rounded-[20px]" />
+            <Skeleton className="h-44 rounded-card" />
           ) : revenueRows.length === 0 ? (
             <p className="text-sm text-secondary-text">
               No revenue data available.
@@ -284,7 +284,7 @@ function AdminDashboard() {
           </div>
 
           {loading ? (
-            <Skeleton className="h-44 rounded-[20px]" />
+            <Skeleton className="h-44 rounded-card" />
           ) : feedback.length === 0 ? (
             <p className="text-sm text-secondary-text">
               No feedback submitted yet.
@@ -294,7 +294,7 @@ function AdminDashboard() {
               {feedback.map((item, index) => (
                 <div
                   key={item.id ?? index}
-                  className="rounded-[16px] border border-border bg-muted p-3 text-sm"
+                  className="rounded-table border border-border bg-muted p-3 text-sm"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <span className="truncate font-semibold text-text">
@@ -336,7 +336,7 @@ function AdminDashboard() {
           </div>
 
           {loading ? (
-            <Skeleton className="h-36 rounded-[20px]" />
+            <Skeleton className="h-36 rounded-card" />
           ) : topItemRows.length === 0 ? (
             <p className="text-sm text-secondary-text">
               No item data available.
@@ -371,7 +371,7 @@ function AdminDashboard() {
           </div>
 
           {loading ? (
-            <Skeleton className="h-36 rounded-[20px]" />
+            <Skeleton className="h-36 rounded-card" />
           ) : topCategoryRows.length === 0 ? (
             <p className="text-sm text-secondary-text">
               No category data available.
@@ -406,7 +406,7 @@ function AdminDashboard() {
           </div>
 
           {loading ? (
-            <Skeleton className="h-36 rounded-[20px]" />
+            <Skeleton className="h-36 rounded-card" />
           ) : orderStatusRows.length === 0 ? (
             <p className="text-sm text-secondary-text">
               No order status data available.

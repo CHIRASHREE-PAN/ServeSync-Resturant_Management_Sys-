@@ -36,9 +36,12 @@ const emptyMenuForm = {
   description: "",
   price: "",
   category_id: "",
+  calories: "",
+  cook_time: "",
   chef_special: false,
   best_seller: false,
   availability: true,
+  image: null,
 };
 
 const emptyStaffForm = {
@@ -65,6 +68,7 @@ function AdminSections() {
   const [menuForm, setMenuForm] = useState(
     emptyMenuForm
   );
+  const [imagePreview, setImagePreview] = useState(null);
 
   const [staffForm, setStaffForm] = useState(
     emptyStaffForm
@@ -167,6 +171,7 @@ function AdminSections() {
   const resetMenuForm = () => {
     setMenuForm(emptyMenuForm);
     setEditingMenuId(null);
+    setImagePreview(null);
   };
 
   const resetStaffForm = () => {
@@ -227,28 +232,29 @@ function AdminSections() {
     setError("");
 
     try {
-      const payload = {
-        name: menuForm.name.trim(),
-        description:
-          menuForm.description.trim(),
-        price: Number(menuForm.price),
-        category_id: Number(
-          menuForm.category_id
-        ),
-        chef_special:
-          Boolean(menuForm.chef_special),
-        best_seller:
-          Boolean(menuForm.best_seller),
-        availability:
-          Boolean(menuForm.availability),
-      };
+      // Use FormData for multipart/form-data upload
+      const formData = new FormData();
+      formData.append('name', menuForm.name.trim());
+      formData.append('description', menuForm.description.trim());
+      formData.append('price', Number(menuForm.price));
+      formData.append('category_id', Number(menuForm.category_id));
+      formData.append('calories', menuForm.calories ? Number(menuForm.calories) : '');
+      formData.append('cook_time', menuForm.cook_time ? Number(menuForm.cook_time) : '');
+      formData.append('chef_special', Boolean(menuForm.chef_special));
+      formData.append('best_seller', Boolean(menuForm.best_seller));
+      formData.append('availability', Boolean(menuForm.availability));
+      
+      // Append image if selected
+      if (menuForm.image) {
+        formData.append('image', menuForm.image);
+      }
 
       let response;
 
       if (editingMenuId !== null) {
         response = await updateMenuItem(
           editingMenuId,
-          payload
+          formData
         );
 
         setMenuItems((current) =>
@@ -260,7 +266,7 @@ function AdminSections() {
         );
       } else {
         response = await createMenuItem(
-          payload
+          formData
         );
 
         setMenuItems((current) => [
@@ -453,13 +459,17 @@ function AdminSections() {
       price: item.price ?? "",
       category_id:
         item.category_id ?? "",
+      calories: item.calories ?? "",
+      cook_time: item.cook_time ?? "",
       chef_special:
         Boolean(item.chef_special),
       best_seller:
         Boolean(item.best_seller),
       availability:
         item.availability !== false,
+      image: null,
     });
+    setImagePreview(item.image || null);
 
     setError("");
   };
@@ -589,7 +599,7 @@ function AdminSections() {
                         event.target.value,
                     })
                   }
-                  className="min-h-24 w-full rounded-[12px] border border-border bg-card px-3 py-2 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  className="min-h-24 w-full rounded-input border border-border bg-card px-3 py-2 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
               </div>
 
@@ -631,9 +641,9 @@ function AdminSections() {
             </div>
 
             {loading ? (
-              <Skeleton className="h-44 rounded-[20px]" />
+              <Skeleton className="h-44 rounded-card" />
             ) : categories.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-border p-8 text-center">
+              <div className="rounded-card border border-dashed border-border p-8 text-center">
                 <p className="text-sm text-secondary-text">
                   No categories found.
                 </p>
@@ -643,7 +653,7 @@ function AdminSections() {
                 {categories.map((category) => (
                   <div
                     key={category.id}
-                    className="flex items-center justify-between gap-3 rounded-[16px] border border-border bg-muted p-3"
+                    className="flex items-center justify-between gap-3 rounded-table border border-border bg-muted p-3"
                   >
                     <div className="min-w-0">
                       <p className="font-medium text-text">
@@ -761,7 +771,7 @@ function AdminSections() {
                         event.target.value,
                     })
                   }
-                  className="min-h-24 w-full rounded-[12px] border border-border bg-card px-3 py-2 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  className="min-h-24 w-full rounded-input border border-border bg-card px-3 py-2 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
               </div>
 
@@ -811,7 +821,7 @@ function AdminSections() {
                       })
                     }
                     required
-                    className="w-full rounded-[12px] border border-border bg-card px-3 py-2 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className="w-full rounded-input border border-border bg-card px-3 py-2 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                   >
                     <option value="">
                       Select category
@@ -828,6 +838,54 @@ function AdminSections() {
                       )
                     )}
                   </select>
+                </div>
+              </div>
+
+              <div className="grid gap-3 md:grid-cols-2">
+                <div>
+                  <label
+                    htmlFor="menu-calories"
+                    className="mb-2 block text-sm font-medium text-text"
+                  >
+                    Calories (kcal)
+                  </label>
+
+                  <Input
+                    id="menu-calories"
+                    type="number"
+                    min="0"
+                    value={menuForm.calories}
+                    onChange={(event) =>
+                      setMenuForm({
+                        ...menuForm,
+                        calories: event.target.value,
+                      })
+                    }
+                    placeholder="e.g., 300"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="menu-cook-time"
+                    className="mb-2 block text-sm font-medium text-text"
+                  >
+                    Cook Time (minutes)
+                  </label>
+
+                  <Input
+                    id="menu-cook-time"
+                    type="number"
+                    min="0"
+                    value={menuForm.cook_time}
+                    onChange={(event) =>
+                      setMenuForm({
+                        ...menuForm,
+                        cook_time: event.target.value,
+                      })
+                    }
+                    placeholder="e.g., 15"
+                  />
                 </div>
               </div>
 
@@ -888,6 +946,45 @@ function AdminSections() {
 
                   Available
                 </label>
+
+                <div>
+                  <label
+                    htmlFor="menu-image"
+                    className="mb-2 block text-sm font-medium text-text"
+                  >
+                    Food Image
+                  </label>
+                  <input
+                    id="menu-image"
+                    type="file"
+                    accept="image/*"
+                    onChange={(event) => {
+                      const file = event.target.files?.[0];
+                      if (file) {
+                        setMenuForm({
+                          ...menuForm,
+                          image: file,
+                        });
+                        // Create preview
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                          setImagePreview(e.target.result);
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="w-full rounded-input border border-border bg-card px-3 py-2 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  />
+                  {imagePreview && (
+                    <div className="mt-2">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="h-32 w-32 rounded-lg object-cover"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="flex gap-2">
@@ -926,9 +1023,9 @@ function AdminSections() {
             </div>
 
             {loading ? (
-              <Skeleton className="h-44 rounded-[20px]" />
+              <Skeleton className="h-44 rounded-card" />
             ) : menuItems.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-border p-8 text-center">
+              <div className="rounded-card border border-dashed border-border p-8 text-center">
                 <p className="text-sm text-secondary-text">
                   No menu items found.
                 </p>
@@ -938,7 +1035,7 @@ function AdminSections() {
                 {menuItems.map((item) => (
                   <div
                     key={item.id}
-                    className="rounded-[16px] border border-border bg-muted p-3"
+                    className="rounded-table border border-border bg-muted p-3"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
@@ -1110,7 +1207,7 @@ function AdminSections() {
                       role: event.target.value,
                     })
                   }
-                  className="w-full rounded-[12px] border border-border bg-card px-3 py-2 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  className="w-full rounded-input border border-border bg-card px-3 py-2 text-sm text-text outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 >
                   <option value="waiter">
                     Waiter
@@ -1162,9 +1259,9 @@ function AdminSections() {
             </div>
 
             {loading ? (
-              <Skeleton className="h-44 rounded-[20px]" />
+              <Skeleton className="h-44 rounded-card" />
             ) : staff.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-border p-8 text-center">
+              <div className="rounded-card border border-dashed border-border p-8 text-center">
                 <p className="text-sm text-secondary-text">
                   No staff members found.
                 </p>
@@ -1174,7 +1271,7 @@ function AdminSections() {
                 {staff.map((member) => (
                   <div
                     key={member.id}
-                    className="flex items-center justify-between gap-3 rounded-[16px] border border-border bg-muted p-3"
+                    className="flex items-center justify-between gap-3 rounded-table border border-border bg-muted p-3"
                   >
                     <div className="min-w-0">
                       <p className="font-medium text-text">

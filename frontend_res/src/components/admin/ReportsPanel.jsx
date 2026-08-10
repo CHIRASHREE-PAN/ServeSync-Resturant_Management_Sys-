@@ -215,7 +215,7 @@ function ReportsPanel() {
       {error ? <Card className="p-4 text-sm text-error">{error}</Card> : null}
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {loading ? Array.from({ length: 4 }).map((_, index) => <Skeleton key={index} className="h-24 rounded-[20px]" />) : summaryCards.map(({ label, value, icon: Icon }) => (
+        {loading ? Array.from({ length: 4 }).map((_, index) => <Skeleton key={index} className="h-24 rounded-card" />) : summaryCards.map(({ label, value, icon: Icon }) => (
           <motion.div key={label} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
             <Card className="flex items-center gap-4">
               <div className="rounded-2xl bg-primary/10 p-3 text-primary">
@@ -247,7 +247,7 @@ function ReportsPanel() {
             <TrendingUp size={18} />
             <h3 className="font-semibold text-text">Revenue</h3>
           </div>
-          {loading ? <Skeleton className="h-48 rounded-[20px]" /> : renderBarChart(charts.revenue, (value) => `$${Number(value || 0).toFixed(2)}`)}
+          {loading ? <Skeleton className="h-48 rounded-card" /> : renderBarChart(charts.revenue, (value) => `$${Number(value || 0).toFixed(2)}`)}
         </Card>
 
         <Card className="p-5">
@@ -255,7 +255,7 @@ function ReportsPanel() {
             <BarChart3 size={18} />
             <h3 className="font-semibold text-text">Top items</h3>
           </div>
-          {loading ? <Skeleton className="h-48 rounded-[20px]" /> : renderBarChart(charts.topItems)}
+          {loading ? <Skeleton className="h-48 rounded-card" /> : renderBarChart(charts.topItems)}
         </Card>
 
         <Card className="p-5">
@@ -263,7 +263,7 @@ function ReportsPanel() {
             <Layers3 size={18} />
             <h3 className="font-semibold text-text">Top categories</h3>
           </div>
-          {loading ? <Skeleton className="h-48 rounded-[20px]" /> : renderBarChart(charts.topCategories)}
+          {loading ? <Skeleton className="h-48 rounded-card" /> : renderBarChart(charts.topCategories)}
         </Card>
 
         <Card className="p-5">
@@ -271,7 +271,7 @@ function ReportsPanel() {
             <Sparkles size={18} />
             <h3 className="font-semibold text-text">Ratings</h3>
           </div>
-          {loading ? <Skeleton className="h-48 rounded-[20px]" /> : renderBarChart(charts.ratings)}
+          {loading ? <Skeleton className="h-48 rounded-card" /> : renderBarChart(charts.ratings)}
         </Card>
       </div>
 
@@ -280,7 +280,7 @@ function ReportsPanel() {
           <Users size={18} />
           <h3 className="font-semibold text-text">Order status</h3>
         </div>
-        {loading ? <Skeleton className="h-40 rounded-[20px]" /> : renderBarChart(charts.orderStatus)}
+        {loading ? <Skeleton className="h-40 rounded-card" /> : renderBarChart(charts.orderStatus)}
       </Card>
     </div>
   );

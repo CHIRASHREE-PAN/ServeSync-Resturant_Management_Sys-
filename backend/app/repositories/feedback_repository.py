@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, joinedload
 
@@ -48,7 +50,9 @@ class FeedbackRepository:
         return items, total_items
 
     def create(self, *, session_id: int, rating: int, comment: str | None) -> Feedback:
-        feedback = Feedback(session_id=session_id, rating=rating, comment=comment)
+        # Explicitly set created_at to avoid database schema mismatch
+        created_at = datetime.now(timezone.utc)
+        feedback = Feedback(session_id=session_id, rating=rating, comment=comment, created_at=created_at)
         self.db.add(feedback)
         self.db.commit()
         self.db.refresh(feedback)

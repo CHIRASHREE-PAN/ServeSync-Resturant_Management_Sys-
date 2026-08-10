@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
-import { X } from 'lucide-react';
 
 function Modal({ open, title, children, onClose }) {
   const panelRef = useRef(null);
@@ -28,7 +27,7 @@ function Modal({ open, title, children, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-text/50 px-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-text/40 px-4 backdrop-blur-sm animate-fade-in"
       onClick={onClose}
       role="presentation"
     >
@@ -38,14 +37,16 @@ function Modal({ open, title, children, onClose }) {
         aria-modal="true"
         aria-label={title}
         tabIndex={-1}
-        className="w-full max-w-md rounded-[20px] border border-border bg-card p-6 shadow-soft outline-none"
+        className="surface-dialog w-full max-w-md p-6 outline-none animate-slide-up"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-text" id="modal-title">{title}</h3>
+        <div className="mb-5 flex items-center justify-between gap-4">
+          <h3 className="text-lg font-semibold text-text" id="modal-title">
+            {title}
+          </h3>
           <button
             type="button"
-            className="rounded-full p-2 text-sm text-secondary-text transition hover:bg-muted"
+            className="rounded-full p-2 text-secondary-text transition-colors duration-200 ease-smooth hover:bg-muted hover:text-text"
             onClick={onClose}
             aria-label="Close dialog"
           >

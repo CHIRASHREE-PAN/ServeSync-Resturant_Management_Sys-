@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime, timezone
 
 from fastapi import HTTPException, status
 from sqlalchemy.exc import SQLAlchemyError
@@ -54,7 +55,9 @@ class KitchenService:
 
             order.status = next_status
             if notify_waiter:
-                order.waiter_notifications.append(WaiterNotification(is_read=False))
+                # Explicitly set created_at to avoid database schema mismatch
+                created_at = datetime.now(timezone.utc)
+                order.waiter_notifications.append(WaiterNotification(is_read=False, created_at=created_at))
             self.repo.commit()
             return self._to_response(order)
         except HTTPException:

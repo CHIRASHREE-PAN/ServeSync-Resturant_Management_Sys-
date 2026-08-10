@@ -2,74 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --color-background: #fff8f0;
-  --color-card: #ffffff;
-  --color-primary: #c65d3b;
-  --color-primary-hover: #a84a2d;
-  --color-accent: #e8a317;
-  --color-secondary: #6b8e23;
-  --color-success: #22c55e;
-  --color-warning: #f59e0b;
-  --color-error: #ef4444;
-  --color-info: #3b82f6;
-  --color-text: #3e2723;
-  --color-secondary-text: #6b7280;
-  --color-border: #eadfd3;
-  --color-divider: #f1ece6;
-  --color-muted: #faf6f1;
-  --color-sidebar: #fffdfb;
-}
-
-/* =========================
-   GLOBAL
-========================= */
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  margin: 0;
-  min-height: 100vh;
-  background: var(--color-background);
-  color: var(--color-text);
-
-  /* Main body font */
-  font-family: "DM Sans", sans-serif;
-
-  @apply antialiased;
-}
-
-/* =========================
-   HEADINGS
-========================= */
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: "Playfair Display", serif;
-  color: var(--color-text);
-}
-
-/* =========================
-   ROOT
-========================= */
-
-#root {
-  min-height: 100vh;
-}
-
-/* =========================
-   TEXT SELECTION
-========================= */
-
-::selection {
-  background: rgba(198, 93, 59, 0.2);
-}
+/* Design tokens live in ./styles/theme.css (single source of truth). */
 
 /* =========================
    BASE
@@ -80,7 +13,163 @@ h6 {
     @apply box-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--color-background);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    letter-spacing: -0.005em;
     @apply antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--color-text);
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+  }
+
+  hr {
+    border-color: var(--color-divider);
+  }
+
+  ::selection {
+    background: rgba(198, 93, 59, 0.18);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+}
+
+/* =========================
+   COMPONENT UTILITIES
+   Reusable design-system classes so components
+   never repeat raw colors/shadows/radii.
+========================= */
+
+@layer components {
+  .surface-card {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+  }
+
+  .surface-muted {
+    background: var(--color-muted);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+  }
+
+  .surface-dropdown {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-input);
+    box-shadow: var(--shadow-dropdown);
+  }
+
+  .surface-dialog {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-dialog);
+    box-shadow: var(--shadow-dialog);
+  }
+
+  .surface-drawer {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-dialog);
+    box-shadow: var(--shadow-drawer);
+  }
+
+  .surface-hero {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-hero);
+    box-shadow: var(--shadow-card);
+  }
+
+  .surface-panel {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-panel);
+    box-shadow: var(--shadow-card);
+  }
+
+  .overlay-backdrop {
+    background: var(--color-overlay);
+    backdrop-filter: blur(2px);
+  }
+
+  .surface-table {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-table);
+    overflow: hidden;
+  }
+
+  .hover-lift {
+    transition:
+      transform var(--transition-base),
+      box-shadow var(--transition-base);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-dropdown);
+  }
+
+  .text-price {
+    font-family: var(--font-numeric);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .text-stat {
+    font-family: var(--font-numeric);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+
+  .page-shell {
+    width: 100%;
+    max-width: var(--layout-max-width);
+    margin-inline: auto;
+    padding-inline: var(--layout-gutter);
+  }
+}
+
+/* =========================
+   MOTION PREFERENCES
+========================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

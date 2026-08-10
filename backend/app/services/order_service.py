@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime, timezone
 from decimal import Decimal, ROUND_HALF_UP
 
 from fastapi import HTTPException, status
@@ -52,6 +53,8 @@ class OrderService:
             (menu_items_by_id[item.menu_item_id].cook_time or 0 for item in payload.items), default=0
         )
 
+        # Explicitly set created_at to avoid database schema mismatch
+        created_at = datetime.now(timezone.utc)
         order = Order(
             session_id=customer_session.id,
             status="ORDER_RECEIVED",
@@ -61,6 +64,7 @@ class OrderService:
             tax=tax,
             total=total,
             estimated_cooking_time=estimated_cooking_time,
+            created_at=created_at,
         )
         order.order_items = [
             OrderItem(

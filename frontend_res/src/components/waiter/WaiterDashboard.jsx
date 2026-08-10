@@ -201,7 +201,7 @@ function WaiterDashboard() {
                 key={index}
                 className="p-5"
               >
-                <Skeleton className="h-20 rounded-[16px]" />
+                <Skeleton className="h-20 rounded-table" />
               </Card>
             ))
           : stats.map(
@@ -253,9 +253,9 @@ function WaiterDashboard() {
           </div>
 
           {loading ? (
-            <Skeleton className="h-60 rounded-[20px]" />
+            <Skeleton className="h-60 rounded-card" />
           ) : orders.length === 0 ? (
-            <div className="rounded-[16px] border border-dashed border-border bg-muted p-6 text-sm text-secondary-text">
+            <div className="rounded-table border border-dashed border-border bg-muted p-6 text-sm text-secondary-text">
               No ready orders right now.
             </div>
           ) : (
@@ -271,7 +271,7 @@ function WaiterDashboard() {
                     opacity: 1,
                     y: 0,
                   }}
-                  className="rounded-[16px] border border-border bg-muted p-4"
+                  className="rounded-table border border-border bg-muted p-4"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
@@ -338,9 +338,9 @@ function WaiterDashboard() {
           </div>
 
           {loading ? (
-            <Skeleton className="h-60 rounded-[20px]" />
+            <Skeleton className="h-60 rounded-card" />
           ) : calls.length === 0 ? (
-            <div className="rounded-[16px] border border-dashed border-border bg-muted p-6 text-sm text-secondary-text">
+            <div className="rounded-table border border-dashed border-border bg-muted p-6 text-sm text-secondary-text">
               No active waiter calls.
             </div>
           ) : (
@@ -356,7 +356,7 @@ function WaiterDashboard() {
                     opacity: 1,
                     y: 0,
                   }}
-                  className="rounded-[16px] border border-border bg-muted p-4"
+                  className="rounded-table border border-border bg-muted p-4"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
@@ -411,7 +411,7 @@ function WaiterDashboard() {
           </h3>
         </div>
 
-        <div className="rounded-[16px] border border-dashed border-border bg-muted p-6 text-sm text-secondary-text">
+        <div className="rounded-table border border-dashed border-border bg-muted p-6 text-sm text-secondary-text">
           Mark a bill as paid using the bill ID returned by
           your billing flow.
         </div>

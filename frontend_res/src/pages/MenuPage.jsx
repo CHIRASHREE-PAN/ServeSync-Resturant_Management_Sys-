@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, SlidersHorizontal, Sparkles, Star, ShoppingBag } from 'lucide-react';
+import { Search, SlidersHorizontal, Sparkles, Star, ShoppingBag, Users } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { getMenuByCategory, listMenuItems, searchMenuItems } from '../api/menu';
 import { listCategories } from '../api/admin';
 import CartDrawer from '../components/cart/CartDrawer';
@@ -10,8 +11,11 @@ import Card from '../components/ui/Card';
 import Input from '../components/ui/Input';
 import Skeleton from '../components/ui/Skeleton';
 import { useCart } from '../context/CartContext';
+import { useCustomerSession } from '../context/CustomerSessionContext';
+import { groupMenuItemsByVariant } from '../utils/menuVariants';
 
 function MenuPage() {
+  const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,7 +28,9 @@ function MenuPage() {
   const [sortDir, setSortDir] = useState('asc');
   const [meta, setMeta] = useState({ total_pages: 1, total_items: 0 });
   const [cartOpen, setCartOpen] = useState(false);
-  const { items: cartItems } = useCart();
+  const { items: cartItems, addItem } = useCart();
+  const { session } = useCustomerSession();
+  const hasActiveSession = session?.status === 'ACTIVE';
 
   const loadMenu = async (nextPage = 1, nextSearch = search, category = selectedCategory, nextSortBy = sortBy, nextSortDir = sortDir) => {
     setLoading(true);
@@ -32,20 +38,34 @@ function MenuPage() {
 
     try {
       let response;
+      let rawItems = [];
+      
       if (nextSearch.trim()) {
         response = await searchMenuItems(nextSearch.trim());
-        setItems(response.data || []);
-        setMeta({ total_pages: 1, total_items: (response.data || []).length });
-      } else if (category !== 'all') {
+        rawItems = response.data || [];
+        setMeta({ total_pages: 1, total_items: rawItems.length });
+      } else if (category !== 'all' && !isNaN(Number(category))) {
+        // Only call getMenuByCategory if category is a valid number
         response = await getMenuByCategory(Number(category));
-        setItems(response.data || []);
-        setMeta({ total_pages: 1, total_items: (response.data || []).length });
+        rawItems = response.data || [];
+        setMeta({ total_pages: 1, total_items: rawItems.length });
       } else {
-        response = await listMenuItems({ page: nextPage, page_size: pageSize, sort_by: nextSortBy, sort_dir: nextSortDir });
+        // Handle 'all', 'chef', and 'seller' filters
+        const params = { page: nextPage, page_size: pageSize, sort_by: nextSortBy, sort_dir: nextSortDir };
+        if (category === 'chef') {
+          params.chef_special = true;
+        } else if (category === 'seller') {
+          params.best_seller = true;
+        }
+        response = await listMenuItems(params);
         const payload = response.data;
-        setItems(payload?.items || []);
+        rawItems = payload?.items || [];
         setMeta({ total_pages: payload?.total_pages || 1, total_items: payload?.total_items || 0 });
       }
+      
+      // Group items with Half Plate / Full Plate variants
+      const groupedItems = groupMenuItemsByVariant(rawItems);
+      setItems(groupedItems);
     } catch (err) {
       setError(err?.response?.data?.detail || 'Unable to load the menu right now.');
       setItems([]);
@@ -107,7 +127,7 @@ function MenuPage() {
 
   return (
     <div className="space-y-6 px-4 py-6 sm:px-6 lg:px-8">
-      <motion.section initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="rounded-[28px] border border-border bg-gradient-to-br from-muted via-card to-background p-6 shadow-soft">
+      <motion.section initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="rounded-hero border border-border bg-gradient-to-br from-muted via-card to-background p-6 shadow-soft">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">Menu Catalog</p>
@@ -122,7 +142,7 @@ function MenuPage() {
 
       <Card className="space-y-4">
         <form onSubmit={submitSearch} className="flex flex-col gap-3 lg:flex-row lg:items-center">
-          <label htmlFor="menu-search" className="flex flex-1 items-center gap-2 rounded-[16px] border border-border bg-muted px-3 py-2">
+          <label htmlFor="menu-search" className="flex flex-1 items-center gap-2 rounded-table border border-border bg-muted px-3 py-2">
             <Search size={16} className="text-primary" aria-hidden="true" />
             <Input
               id="menu-search"
@@ -133,7 +153,7 @@ function MenuPage() {
             />
           </label>
           <div className="flex flex-wrap gap-3">
-            <label htmlFor="menu-category" className="flex items-center gap-2 rounded-[16px] border border-border bg-muted px-3 py-2 text-sm text-text">
+            <label htmlFor="menu-category" className="flex items-center gap-2 rounded-table border border-border bg-muted px-3 py-2 text-sm text-text">
               <SlidersHorizontal size={16} className="text-primary" aria-hidden="true" />
               <select id="menu-category" className="bg-transparent outline-none" value={selectedCategory} onChange={(event) => { setSelectedCategory(event.target.value); setPage(1); }}>
                 <option value="all">All categories</option>
@@ -142,14 +162,14 @@ function MenuPage() {
                 ))}
               </select>
             </label>
-            <label htmlFor="menu-sortby" className="flex items-center gap-2 rounded-[16px] border border-border bg-muted px-3 py-2 text-sm text-text">
+            <label htmlFor="menu-sortby" className="flex items-center gap-2 rounded-table border border-border bg-muted px-3 py-2 text-sm text-text">
               <Sparkles size={16} className="text-primary" aria-hidden="true" />
               <select id="menu-sortby" className="bg-transparent outline-none" value={sortBy} onChange={(event) => { setSortBy(event.target.value); setPage(1); }}>
                 <option value="name">Sort by name</option>
                 <option value="price">Sort by price</option>
               </select>
             </label>
-            <label htmlFor="menu-sortdir" className="flex items-center gap-2 rounded-[16px] border border-border bg-muted px-3 py-2 text-sm text-text">
+            <label htmlFor="menu-sortdir" className="flex items-center gap-2 rounded-table border border-border bg-muted px-3 py-2 text-sm text-text">
               <Star size={16} className="text-primary" aria-hidden="true" />
               <select id="menu-sortdir" className="bg-transparent outline-none" value={sortDir} onChange={(event) => { setSortDir(event.target.value); setPage(1); }}>
                 <option value="asc">Ascending</option>
@@ -173,10 +193,53 @@ function MenuPage() {
         </Button>
       </div>
 
+      {/* Active dining session banner */}
+      {hasActiveSession && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-table border border-success/20 bg-success/5 p-4 sm:p-5"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-success/10 text-success">
+                <Users size={18} />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-text">
+                  You're dining at table {session?.table_number}
+                </p>
+                <p className="text-sm text-secondary-text">
+                  {session?.name
+                    ? `${session.name} — tap "Add to Order" on any dish to build your order.`
+                    : 'Tap "Add to Order" on any dish to build your order.'}
+                </p>
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => navigate('/session')}
+              className="gap-2"
+            >
+              <Users size={16} />
+              My Session
+            </Button>
+          </div>
+        </motion.div>
+      )}
+
       {loading ? (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 6 }).map((_, index) => (
-            <Skeleton key={index} className="h-72 rounded-[24px]" />
+            <Card key={index} className="overflow-hidden p-0">
+              <Skeleton className="h-48 w-full rounded-none" />
+              <div className="p-5">
+                <Skeleton className="h-5 w-2/3" />
+                <Skeleton className="mt-3 h-4 w-full" />
+                <Skeleton className="mt-2 h-4 w-4/5" />
+              </div>
+            </Card>
           ))}
         </div>
       ) : error ? (
@@ -191,15 +254,36 @@ function MenuPage() {
           <p className="mt-2 text-sm text-secondary-text">Try a different keyword or reset the filters.</p>
         </Card>
       ) : (
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {filteredItems.map((item) => (
-            <MenuCard key={item.id} item={item} onOpenCart={() => setCartOpen(true)} />
+            <MenuCard
+              key={item.id}
+              item={item}
+              hasActiveSession={hasActiveSession}
+              onAddToCart={(menuItemData) => {
+                // Extract the actual menu item and variant info
+                const { selectedVariant, ...menuItem } = menuItemData;
+                
+                // If it's a variant item, use the selected variant's ID
+                const menuItemId = selectedVariant ? selectedVariant.id : menuItem.id;
+                const price = selectedVariant ? selectedVariant.price : menuItem.price;
+                
+                addItem({
+                  id: menuItemId,
+                  name: menuItem.name,
+                  price: price,
+                  image: menuItem.image,
+                  quantity: 1,
+                });
+                setCartOpen(true);
+              }}
+            />
           ))}
         </div>
       )}
 
       {!loading && !error && meta.total_pages > 1 && (
-        <div className="flex items-center justify-between rounded-[24px] border border-border bg-card p-4">
+        <div className="flex items-center justify-between rounded-panel border border-border bg-card p-4">
           <p className="text-sm text-secondary-text">Page {page} of {meta.total_pages}</p>
           <div className="flex gap-2">
             <Button variant="secondary" disabled={page === 1} onClick={() => setPage((value) => Math.max(1, value - 1))}>

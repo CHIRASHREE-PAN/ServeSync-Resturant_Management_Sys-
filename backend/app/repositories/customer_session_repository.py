@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from uuid import uuid4
 
 from sqlalchemy import select
@@ -32,6 +33,8 @@ class CustomerSessionRepository:
         email: str,
         number_of_people: int,
     ) -> CustomerSession:
+        # Explicitly set started_at to avoid database schema mismatch
+        started_at = datetime.now(timezone.utc)
         customer_session = CustomerSession(
             session_id=str(uuid4()),
             table_id=table_id,
@@ -39,6 +42,7 @@ class CustomerSessionRepository:
             email=email,
             number_of_people=number_of_people,
             status="ACTIVE",
+            started_at=started_at,
         )
         self.db.add(customer_session)
         self.db.commit()

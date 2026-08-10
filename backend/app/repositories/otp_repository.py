@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -11,7 +11,15 @@ class OTPRepository:
         self.db = db
 
     def create_otp(self, *, user_id: int, otp: str, expires_at: datetime) -> OTP:
-        otp_record = OTP(user_id=user_id, otp=otp, expires_at=expires_at, is_used=False)
+        # Explicitly set created_at to avoid database schema mismatch
+        created_at = datetime.now(timezone.utc)
+        otp_record = OTP(
+            user_id=user_id,
+            otp=otp,
+            expires_at=expires_at,
+            is_used=False,
+            created_at=created_at
+        )
         self.db.add(otp_record)
         self.db.commit()
         self.db.refresh(otp_record)
