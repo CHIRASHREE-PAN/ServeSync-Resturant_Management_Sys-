@@ -40,9 +40,25 @@
   --color-role-billing: #6b8e23;
 
   /* ---------- Typography ---------- */
-  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-display: 'Poppins', 'Inter', sans-serif;
-  --font-numeric: 'Manrope', 'Inter', sans-serif;
+
+  /* Clean and readable UI/body text */
+  --font-body:
+    'Inter',
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+
+  /* Elegant restaurant-style headings */
+  --font-display:
+    'Playfair Display',
+    Georgia,
+    serif;
+
+  /* Professional prices and statistics */
+  --font-numeric:
+    'DM Mono',
+    monospace;
 
   /* ---------- Radius ---------- */
   --radius-card: 20px;
@@ -54,7 +70,7 @@
   --radius-hero: 28px;
   --radius-panel: 24px;
 
-  /* ---------- Elevation (subtle only) ---------- */
+  /* ---------- Elevation ---------- */
   --shadow-card: 0 8px 30px rgba(0, 0, 0, 0.05);
   --shadow-dropdown: 0 12px 30px rgba(0, 0, 0, 0.08);
   --shadow-dialog: 0 25px 60px rgba(0, 0, 0, 0.12);

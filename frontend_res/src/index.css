@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -20,12 +22,15 @@
   body {
     margin: 0;
     min-height: 100vh;
+
     background: var(--color-background);
     color: var(--color-text);
+
     font-family: var(--font-body);
     font-size: 15px;
     line-height: 1.6;
     letter-spacing: -0.005em;
+
     @apply antialiased;
   }
 
@@ -40,6 +45,29 @@
     color: var(--color-text);
     letter-spacing: -0.02em;
     line-height: 1.25;
+  }
+
+  h1 {
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+
+  h2 {
+    font-weight: 600;
+  }
+
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 600;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font-family: var(--font-body);
   }
 
   hr {
@@ -62,11 +90,13 @@
 
 /* =========================
    COMPONENT UTILITIES
-   Reusable design-system classes so components
-   never repeat raw colors/shadows/radii.
 ========================= */
 
 @layer components {
+  /* =========================
+     SURFACES
+  ========================= */
+
   .surface-card {
     background: var(--color-card);
     border: 1px solid var(--color-border);
@@ -115,11 +145,6 @@
     box-shadow: var(--shadow-card);
   }
 
-  .overlay-backdrop {
-    background: var(--color-overlay);
-    backdrop-filter: blur(2px);
-  }
-
   .surface-table {
     background: var(--color-card);
     border: 1px solid var(--color-border);
@@ -127,35 +152,247 @@
     overflow: hidden;
   }
 
+  /* =========================
+     HOVER ANIMATION
+  ========================= */
+
   .hover-lift {
     transition:
-      transform var(--transition-base),
-      box-shadow var(--transition-base);
+      transform 0.25s ease,
+      box-shadow 0.25s ease,
+      border-color 0.25s ease;
   }
 
   .hover-lift:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
     box-shadow: var(--shadow-dropdown);
   }
 
+  /* =========================
+     BUTTON ANIMATION
+  ========================= */
+
+  .btn-animated {
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      opacity 0.2s ease;
+  }
+
+  .btn-animated:hover {
+    transform: translateY(-1px);
+  }
+
+  .btn-animated:active {
+    transform: translateY(1px) scale(0.98);
+  }
+
+  /* =========================
+     STAGGERED CARDS
+  ========================= */
+
+  .stagger-children > * {
+    animation: fade-up 0.5s ease-out both;
+  }
+
+  .stagger-children > *:nth-child(1) {
+    animation-delay: 0.05s;
+  }
+
+  .stagger-children > *:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+
+  .stagger-children > *:nth-child(3) {
+    animation-delay: 0.15s;
+  }
+
+  .stagger-children > *:nth-child(4) {
+    animation-delay: 0.2s;
+  }
+
+  .stagger-children > *:nth-child(5) {
+    animation-delay: 0.25s;
+  }
+
+  .stagger-children > *:nth-child(6) {
+    animation-delay: 0.3s;
+  }
+
+  /* =========================
+     SKELETON LOADING
+  ========================= */
+
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--color-muted) 25%,
+      var(--color-card) 50%,
+      var(--color-muted) 75%
+    );
+
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+    border-radius: var(--radius-input);
+  }
+
+  /* =========================
+     PRICE
+  ========================= */
+
   .text-price {
     font-family: var(--font-numeric);
-    font-weight: 700;
+    font-weight: 500;
     letter-spacing: -0.01em;
   }
 
+  /* =========================
+     STATISTICS
+  ========================= */
+
   .text-stat {
     font-family: var(--font-numeric);
-    font-weight: 800;
+    font-weight: 500;
     letter-spacing: -0.03em;
     line-height: 1.1;
   }
+
+  /* =========================
+     PAGE SHELL
+  ========================= */
 
   .page-shell {
     width: 100%;
     max-width: var(--layout-max-width);
     margin-inline: auto;
     padding-inline: var(--layout-gutter);
+  }
+
+  /* =========================
+     ANIMATION UTILITIES
+  ========================= */
+
+  .animate-fade-in {
+    animation: fade-in 0.4s ease-out both;
+  }
+
+  .animate-fade-up {
+    animation: fade-up 0.5s ease-out both;
+  }
+
+  .animate-fade-down {
+    animation: fade-down 0.4s ease-out both;
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.3s ease-out both;
+  }
+
+  .animate-slide-right {
+    animation: slide-in-right 0.45s ease-out both;
+  }
+
+  .animate-slide-left {
+    animation: slide-in-left 0.45s ease-out both;
+  }
+
+  .animate-pulse-soft {
+    animation: pulse-soft 2s ease-in-out infinite;
+  }
+}
+
+/* =========================
+   KEYFRAME ANIMATIONS
+========================= */
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+
+  100% {
+    background-position: 1000px 0;
   }
 }
 
