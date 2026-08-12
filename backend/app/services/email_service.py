@@ -18,7 +18,11 @@ class EmailService:
         msg.set_content(f"Your OTP is: {otp}\nIt expires in 5 minutes.")
 
         context = ssl.create_default_context()
-        with smtplib.SMTP(settings.smtp_host, settings.smtp_port) as server:
+        with smtplib.SMTP(
+            settings.smtp_host,
+            settings.smtp_port,
+            timeout=10
+        ) as server:
             server.starttls(context=context)
             server.login(settings.smtp_username, settings.smtp_password)
             server.send_message(msg)
@@ -29,7 +33,9 @@ class EmailService:
         msg["Subject"] = f"Restaurant Invoice #{bill_id}"
         msg["From"] = settings.smtp_username
         msg["To"] = to_email
-        msg.set_content("Please find your restaurant invoice attached. Thank you for dining with us.")
+        msg.set_content(
+            "Please find your restaurant invoice attached. Thank you for dining with us."
+        )
         msg.add_attachment(
             invoice_path.read_bytes(),
             maintype="application",
@@ -38,7 +44,11 @@ class EmailService:
         )
 
         context = ssl.create_default_context()
-        with smtplib.SMTP(settings.smtp_host, settings.smtp_port) as server:
+        with smtplib.SMTP(
+            settings.smtp_host,
+            settings.smtp_port,
+            timeout=10
+        ) as server:
             server.starttls(context=context)
             server.login(settings.smtp_username, settings.smtp_password)
             server.send_message(msg)
