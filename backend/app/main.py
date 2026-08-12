@@ -62,7 +62,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://127.0.0.1:5173",
-        "https://serve-sync-resturant-management-sys.vercel.app/"
+        "https://serve-sync-resturant-management-1wbstfnfv.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
