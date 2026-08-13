@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     app_name: str = "RestaurantManagementSystem"
     app_version: str = "1.0.0"
 
+    # Database
     db_driver: str = "mysql+pymysql"
     db_user: str = "root"
     db_password: str = "1234"
@@ -14,15 +15,13 @@ class Settings(BaseSettings):
     db_port: int = 3306
     db_name: str = "restaurant_db"
 
+    # JWT
     jwt_secret: str = "change-this-secret"
     jwt_algorithm: str = "HS256"
     jwt_expiry_minutes: int = 60
 
-    smtp_host: str = "smtp.ethereal.email"
-    smtp_port: int = 587
-    smtp_username: str = "catharine.kuphal88@ethereal.email"
-    smtp_password: str = "F57FMp3aRDG1BDS5SK"
-    smtp_use_tls: bool = True
+    # Resend Email
+    resend_api_key: str
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -32,11 +31,21 @@ class Settings(BaseSettings):
 
     @property
     def mysql_url(self) -> str:
-        return f"{self.db_driver}://{self.db_user}:{self.db_password}@{self.db_host}:{self.db_port}/"
+        return (
+            f"{self.db_driver}://"
+            f"{self.db_user}:{self.db_password}@"
+            f"{self.db_host}:{self.db_port}/"
+        )
 
     @property
     def database_url(self) -> str:
-        return f"{self.db_driver}://{self.db_user}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_name}"
+        return (
+            f"{self.db_driver}://"
+            f"{self.db_user}:{self.db_password}@"
+            f"{self.db_host}:{self.db_port}/"
+            f"{self.db_name}"
+        )
+
 
 @lru_cache
 def get_settings() -> Settings:

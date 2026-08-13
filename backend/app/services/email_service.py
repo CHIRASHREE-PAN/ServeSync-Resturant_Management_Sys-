@@ -1,54 +1,62 @@
-import smtplib
-import ssl
-from email.message import EmailMessage
 from pathlib import Path
+import base64
+
+import resend
 
 from app.config import get_settings
 
+
 settings = get_settings()
+
+resend.api_key = settings.resend_api_key
 
 
 class EmailService:
+
     @staticmethod
     def send_otp_email(to_email: str, otp: str) -> None:
-        msg = EmailMessage()
-        msg["Subject"] = "Your Restaurant OTP"
-        msg["From"] = settings.smtp_username
-        msg["To"] = to_email
-        msg.set_content(f"Your OTP is: {otp}\nIt expires in 5 minutes.")
+        params = {
+            "from": "onboarding@resend.dev",
+            "to": [to_email],
+            "subject": "Your Restaurant OTP",
+            "html": f"""
+                <h2>Your Restaurant OTP</h2>
+                <p>Your OTP is:</p>
+                <h1>{otp}</h1>
+                <p>This OTP expires in 5 minutes.</p>
+            """,
+        }
 
-        context = ssl.create_default_context()
-        with smtplib.SMTP(
-            settings.smtp_host,
-            settings.smtp_port,
-            timeout=10
-        ) as server:
-            server.starttls(context=context)
-            server.login(settings.smtp_username, settings.smtp_password)
-            server.send_message(msg)
+        resend.Emails.send(params)
 
     @staticmethod
-    def send_invoice_email(to_email: str, invoice_path: Path, bill_id: int) -> None:
-        msg = EmailMessage()
-        msg["Subject"] = f"Restaurant Invoice #{bill_id}"
-        msg["From"] = settings.smtp_username
-        msg["To"] = to_email
-        msg.set_content(
-            "Please find your restaurant invoice attached. Thank you for dining with us."
-        )
-        msg.add_attachment(
-            invoice_path.read_bytes(),
-            maintype="application",
-            subtype="pdf",
-            filename=invoice_path.name,
-        )
+    def send_invoice_email(
+        to_email: str,
+        invoice_path: Path,
+        bill_id: int,
+    ) -> None:
 
-        context = ssl.create_default_context()
-        with smtplib.SMTP(
-            settings.smtp_host,
-            settings.smtp_port,
-            timeout=10
-        ) as server:
-            server.starttls(context=context)
-            server.login(settings.smtp_username, settings.smtp_password)
-            server.send_message(msg)
+        # Convert PDF to Base64
+        pdf_content = base64.b64encode(
+            invoice_path.read_bytes()
+        ).decode("utf-8")
+
+        params = {
+            "from": "onboarding@resend.dev",
+            "to": [to_email],
+            "subject": f"Restaurant Invoice #{bill_id}",
+            "html": """
+                <p>
+                    Please find your restaurant invoice attached.
+                    Thank you for dining with us.
+                </p>
+            """,
+            "attachments": [
+                {
+                    "filename": invoice_path.name,
+                    "content": pdf_content,
+                }
+            ],
+        }
+
+        resend.Emails.send(params)
